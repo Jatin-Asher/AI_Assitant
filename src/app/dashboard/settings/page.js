@@ -239,24 +239,61 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-white">
-      <main className="max-w-4xl mx-auto p-6 md:p-10">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <p className="text-sm uppercase tracking-[0.25em] text-violet-700 dark:text-violet-300">Account</p>
-            <h1 className="text-4xl font-bold mt-2">Settings</h1>
+      <div className="flex min-h-screen">
+        <aside className="w-72 border-r border-slate-200 bg-white px-6 py-6 dark:border-slate-800 dark:bg-slate-950">
+          <div className="mb-10 flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-700 text-sm font-bold text-white dark:bg-violet-800">
+              AI
+            </div>
+            <div>
+              <p className="font-bold tracking-wide">Socratic</p>
+              <p className="text-xs uppercase tracking-[0.25em] text-slate-400">AI Tutor</p>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
+
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.25em] text-slate-400">Main Menu</p>
+          <nav className="space-y-2">
+            <button
+              onClick={() => router.push('/dashboard/overview')}
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
+            >
+              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">dashboard</span>
+              <span className="font-medium">Tutor Dashboard</span>
+            </button>
             <button
               onClick={() => router.push('/dashboard')}
-              className="rounded-xl border border-violet-300 bg-white px-4 py-2 text-violet-800 hover:bg-violet-50 dark:border-violet-700 dark:bg-slate-900 dark:text-violet-200 dark:hover:bg-slate-800"
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
             >
-              Back
+              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">chat</span>
+              <span className="font-medium">My Sessions</span>
             </button>
-          </div>
-        </div>
+            <button
+              onClick={() => router.push('/dashboard/progress')}
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
+            >
+              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">monitoring</span>
+              <span className="font-medium">Learning Progress</span>
+            </button>
+            <button className="flex w-full items-center gap-3 rounded-2xl bg-violet-100 px-4 py-3 text-violet-900 dark:bg-violet-900/30 dark:text-violet-100">
+              <span className="material-symbols-outlined text-violet-700 dark:text-violet-300">settings</span>
+              <span className="font-medium">User Settings</span>
+            </button>
+          </nav>
+        </aside>
 
-        <div className="rounded-3xl border border-violet-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <main className="flex-1 p-6 md:p-10">
+          <div className="max-w-4xl">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <p className="text-sm uppercase tracking-[0.25em] text-violet-700 dark:text-violet-300">Account</p>
+                <h1 className="text-4xl font-bold mt-2">Settings</h1>
+              </div>
+              <div className="flex items-center gap-3">
+                <ThemeToggle />
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-violet-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-900">
           <h2 className="text-2xl font-bold mb-2">Change Username</h2>
           <p className="text-slate-600 dark:text-slate-400 mb-8">
             Enter your correct email and password. Your username will only be changed if both credentials are valid.
@@ -312,11 +349,11 @@ export default function SettingsPage() {
           </form>
         </div>
 
-        <div className="mt-8 rounded-3xl border border-violet-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-          <h2 className="text-2xl font-bold mb-2">Change Password</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-8">
-            Verify your account with your saved security questions before setting a new password.
-          </p>
+            <div className="mt-8 rounded-3xl border border-violet-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+              <h2 className="text-2xl font-bold mb-2">Change Password</h2>
+              <p className="text-slate-600 dark:text-slate-400 mb-8">
+                Verify your account with your saved security questions before setting a new password.
+              </p>
 
           {passwordStep === 'email' && (
             <form onSubmit={handleFetchQuestions} className="space-y-5">
@@ -430,8 +467,10 @@ export default function SettingsPage() {
               </div>
             </form>
           )}
-        </div>
-      </main>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

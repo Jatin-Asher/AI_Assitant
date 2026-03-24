@@ -37,6 +37,12 @@ const userSchema = new mongoose.Schema({
             },
             message: 'Exactly two security questions are required.'
         }
+    },
+    weeklyGoalHours: {
+        type: Number,
+        default: 17,
+        min: 1,
+        max: 100
     }
 }, { timestamps: true });
 

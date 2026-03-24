@@ -10,6 +10,7 @@ import { useSessionTimer } from '../../../hooks/useSessionTimer';
 
 const API_BASE_URL = 'http://localhost:5000';
 const STORAGE_KEY = 'socratic-session-history';
+const ACTIVE_SESSION_KEY = 'socratic-active-session';
 
 const formatDuration = (seconds) => {
   const mins = Math.floor(seconds / 60);
@@ -73,6 +74,13 @@ export default function SessionPage() {
     if (existingSession?.messages?.length) {
       setMessages(existingSession.messages);
     }
+
+    localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify({
+      id: sessionId,
+      subject,
+      question: startingQuestion,
+      updatedAt: Date.now(),
+    }));
 
     setLoading(false);
   }, [router, sessionId]);
@@ -178,6 +186,7 @@ export default function SessionPage() {
     const existingHistory = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     const recentUserQuestion = [...messages].reverse().find((message) => message.role === 'user')?.content || startingQuestion;
     const preview = [...messages].reverse().find((message) => message.role === 'assistant')?.content || recentUserQuestion;
+    const token = localStorage.getItem('token');
 
     const nextHistory = makeSessionEntry({
       existingHistory,
@@ -195,15 +204,20 @@ export default function SessionPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
           sessionId,
           timeSpent: elapsedSeconds,
+          subject,
+          recentQuestion: recentUserQuestion,
+          preview,
         }),
       });
     } catch {
       // Best-effort sync; local history is already persisted above.
     }
+    localStorage.removeItem(ACTIVE_SESSION_KEY);
     resetTimer();
     router.push('/dashboard');
   };
@@ -224,6 +238,7 @@ export default function SessionPage() {
     setMenuOpenId(null);
 
     if (entryId === sessionId) {
+      localStorage.removeItem(ACTIVE_SESSION_KEY);
       resetTimer();
       setMessages([]);
       router.replace('/dashboard');
@@ -241,26 +256,50 @@ export default function SessionPage() {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(196,181,253,0.35),_transparent_22%),linear-gradient(135deg,_#faf5ff_0%,_#f8fafc_50%,_#eef2ff_100%)] text-slate-900 dark:bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.18),_transparent_22%),linear-gradient(135deg,_#090b17_0%,_#101426_45%,_#090d1b_100%)] dark:text-white">
       <div className="flex min-h-screen">
-        <aside className={`overflow-hidden border-r border-violet-200 bg-white/80 px-4 py-5 backdrop-blur-xl transition-all duration-300 dark:border-violet-500/10 dark:bg-slate-950/70 ${isFocusMode ? 'pointer-events-none w-0 -translate-x-8 px-0 opacity-0' : 'w-72 translate-x-0 opacity-100'}`}>
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="mb-8 h-14 w-14 rounded-2xl border border-violet-300 bg-white text-xl font-bold text-violet-800 shadow-[0_0_20px_rgba(167,139,250,0.18)] dark:border-violet-700/35 dark:bg-slate-900/90 dark:text-violet-200 dark:shadow-[0_0_20px_rgba(76,29,149,0.25)]"
-          >
-            AI
-          </button>
+        <aside className={`overflow-hidden border-r border-slate-200 bg-white px-6 py-6 transition-all duration-300 dark:border-slate-800 dark:bg-slate-950 ${isFocusMode ? 'pointer-events-none w-0 -translate-x-8 px-0 opacity-0' : 'w-72 translate-x-0 opacity-100'}`}>
+          <div className="mb-10 flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-700 text-sm font-bold text-white dark:bg-violet-800">
+              AI
+            </div>
+            <div>
+              <p className="font-bold tracking-wide">Socratic</p>
+              <p className="text-xs uppercase tracking-[0.25em] text-slate-400">AI Tutor</p>
+            </div>
+          </div>
 
-          <nav className="space-y-3">
-            <div className="flex items-center gap-3 rounded-2xl bg-violet-100 px-4 py-4 text-violet-900 dark:bg-white/8 dark:text-violet-100">
-              <span className="material-symbols-outlined text-violet-700 dark:text-violet-400">chat</span>
-              <span className="text-[1.05rem] font-medium">My Sessions</span>
-            </div>
-            <div className="flex items-center gap-3 rounded-2xl px-4 py-4 text-slate-600 dark:text-slate-300">
-              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-400/80">menu_book</span>
-              <span className="text-[1.05rem] font-medium">{subject}</span>
-            </div>
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.25em] text-slate-400">Main Menu</p>
+          <nav className="space-y-2">
+            <button
+              onClick={() => router.push('/dashboard/overview')}
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
+            >
+              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">dashboard</span>
+              <span className="font-medium">Tutor Dashboard</span>
+            </button>
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
+            >
+              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">chat</span>
+              <span className="font-medium">My Sessions</span>
+            </button>
+            <button
+              onClick={() => router.push('/dashboard/progress')}
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
+            >
+              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">monitoring</span>
+              <span className="font-medium">Learning Progress</span>
+            </button>
+            <button
+              onClick={() => router.push('/dashboard/settings')}
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
+            >
+              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">settings</span>
+              <span className="font-medium">User Settings</span>
+            </button>
           </nav>
 
-          <div className="mt-8 rounded-3xl border border-violet-200 bg-violet-50/60 p-4 dark:border-violet-700/20 dark:bg-white/5">
+          <div className="mt-12 rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
             <p className="text-xs uppercase tracking-[0.25em] text-violet-700/80 dark:text-violet-200/70">Current Subject</p>
             <h2 className="mt-3 text-3xl font-bold text-slate-900 dark:text-white">{subject}</h2>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Time spent in this session: {formatDuration(elapsedSeconds)}</p>
