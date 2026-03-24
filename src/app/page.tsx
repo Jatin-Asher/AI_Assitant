@@ -1,15 +1,9 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { useTheme } from "next-themes";
+import { ThemeToggle } from '../components/theme-toggle';
 
 export default function LandingPage() {
-  const { theme, setTheme } = useTheme();
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
-
   return (
     <>
       {/* Top Navigation Bar */}
@@ -20,16 +14,7 @@ export default function LandingPage() {
 
           </div>
           <div className="flex items-center gap-4">
-            <button
-               onClick={toggleTheme}
-               className="p-2 text-on-surface-variant dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors active:scale-95 duration-200"
-            >
-              <span className="material-symbols-outlined dark:hidden" data-icon="dark_mode">dark_mode</span>
-              <span className="material-symbols-outlined hidden dark:block text-primary-fixed">light_mode</span>
-            </button>
-            <button className="p-2 text-on-surface-variant dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors active:scale-95 duration-200">
-              <span className="material-symbols-outlined" data-icon="notifications">notifications</span>
-            </button>
+            <ThemeToggle />
             <div className="h-8 w-8 rounded-full bg-primary-fixed dark:bg-purple-900/40 flex items-center justify-center overflow-hidden border border-outline-variant/30">
               <img alt="User avatar" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5VfV-ZRKHSbadao7w1xGpRfYq_TTanX3C521RfoiRZnKwTQX1lH-qfLZSWT1x2kvvBppF5iPtnmF16jXmxNQ-Kr5mo01ORGymeefn1YJsfvjNbAKuPzNuHX9TPA1uMlovvdJau51BJfJzkpaR9fZXBKWcBJhSthqE4CfJyL88PJ12S5rU8ORxb_KB27kNKOou6Rnwe5KZ5mNKzeoQz7TvoiADOfFc0f0T4NmHp10k8GFKYBtGEETB1FGgjqUoYtiTR-0E4b5Ojc34" />
             </div>
@@ -54,9 +39,9 @@ export default function LandingPage() {
                 An AI tutor that guides you step-by-step using questions, hints, and reasoning — instead of giving direct answers.
               </p>
               <div className="flex flex-col sm:flex-row flex-wrap gap-4">
-                <button className="px-6 md:px-8 py-3 md:py-4 rounded-DEFAULT bg-gradient-to-br from-primary to-primary-container text-on-primary font-semibold text-base md:text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-95 w-full sm:w-auto">
+                <Link href="/login?mode=register" className="px-6 md:px-8 py-3 md:py-4 rounded-DEFAULT bg-gradient-to-br from-primary to-primary-container text-on-primary font-semibold text-base md:text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-95 w-full sm:w-auto text-center inline-block">
                   Get Started
-                </button>
+                </Link>
 
                 <Link href="/login" className="px-6 md:px-8 py-3 md:py-4 rounded-DEFAULT bg-surface-container-high dark:bg-gray-800 text-on-surface dark:text-gray-100 font-semibold text-base md:text-lg hover:bg-surface-container-highest dark:hover:bg-gray-700 transition-all active:scale-95 w-full sm:w-auto text-center inline-block">
                   Log In
@@ -230,12 +215,9 @@ export default function LandingPage() {
               Join thousands of students and lifelong learners who are mastering complex subjects through inquiry.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button className="px-8 md:px-10 py-4 md:py-5 rounded-DEFAULT bg-primary text-on-primary font-bold text-base md:text-lg hover:bg-primary-container transition-all shadow-lg hover:shadow-primary/30 font-headline">
+              <Link href="/login?mode=register" className="px-8 md:px-10 py-4 md:py-5 rounded-DEFAULT bg-primary text-on-primary font-bold text-base md:text-lg hover:bg-primary-container transition-all shadow-lg hover:shadow-primary/30 font-headline text-center inline-block">
                 Create Free Account
-              </button>
-              <button className="px-8 md:px-10 py-4 md:py-5 rounded-DEFAULT bg-white dark:bg-purple-900/40 border border-outline-variant dark:border-purple-500/30 text-on-surface dark:text-gray-100 dark:text-purple-300 font-bold text-base md:text-lg hover:bg-surface-container-low transition-all font-headline">
-                Schedule a Demo
-              </button>
+              </Link>
             </div>
           </div>
         </section>

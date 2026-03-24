@@ -2,10 +2,12 @@ const User = require('../../db/user.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const normalizeAnswer = (value = '') => value.trim().toLowerCase().replace(/\s+/g, ' ');
+
 // REGISTER
 exports.registerUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, securityQuestions } = req.body;
 
         // check if user exists
         const existingUser = await User.findOne({ email });
@@ -13,14 +15,30 @@ exports.registerUser = async (req, res) => {
             return res.status(400).json({ message: "Email already exists" });
         }
 
+        if (!Array.isArray(securityQuestions) || securityQuestions.length !== 2) {
+            return res.status(400).json({ message: "Please select and answer two security questions" });
+        }
+
+        const selectedQuestions = securityQuestions.map((item) => item.question);
+        if (new Set(selectedQuestions).size !== selectedQuestions.length) {
+            return res.status(400).json({ message: "Security questions must be different" });
+        }
+
         // hash password
         const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedSecurityQuestions = await Promise.all(
+            securityQuestions.map(async (item) => ({
+                question: item.question,
+                answer: await bcrypt.hash(normalizeAnswer(item.answer), 10)
+            }))
+        );
 
         // create user
         const user = await User.create({
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            securityQuestions: hashedSecurityQuestions
         });
 
         res.status(201).json({
@@ -64,5 +82,130 @@ exports.loginUser = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+// UPDATE USERNAME
+exports.updateUsername = async (req, res) => {
+    try {
+        const { email, password, name } = req.body;
+
+        if (!email || !password || !name) {
+            return res.status(400).json({ message: "Email, password, and new username are required" });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
+
+        user.name = name.trim();
+        await user.save();
+
+        res.status(200).json({
+            message: "Username updated successfully",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getSecurityQuestions = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+
+        const user = await User.findOne({ email }).select('securityQuestions');
+        if (!user || !user.securityQuestions?.length) {
+            return res.status(404).json({ message: "No recovery setup found for this email" });
+        }
+
+        return res.status(200).json({
+            questions: user.securityQuestions.map((item, index) => ({
+                index,
+                question: item.question
+            }))
+        });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+exports.verifySecurityAnswers = async (req, res) => {
+    try {
+        const { email, answers } = req.body;
+
+        if (!email || !Array.isArray(answers) || answers.length !== 2) {
+            return res.status(400).json({ message: "Email and both security answers are required" });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user || !user.securityQuestions?.length) {
+            return res.status(400).json({ message: "Invalid recovery details" });
+        }
+
+        const comparisons = await Promise.all(
+            user.securityQuestions.map((item, index) =>
+                bcrypt.compare(normalizeAnswer(answers[index]?.answer || ''), item.answer)
+            )
+        );
+
+        if (comparisons.includes(false)) {
+            return res.status(400).json({ message: "Security answers did not match" });
+        }
+
+        const resetToken = jwt.sign(
+            { id: user._id, purpose: 'password-reset' },
+            process.env.JWT_SECRET,
+            { expiresIn: '15m' }
+        );
+
+        return res.status(200).json({
+            message: "Security answers verified",
+            resetToken
+        });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+exports.resetPasswordWithSecurityQuestions = async (req, res) => {
+    try {
+        const { resetToken, password } = req.body;
+
+        if (!resetToken || !password) {
+            return res.status(400).json({ message: "Reset token and new password are required" });
+        }
+
+        const payload = jwt.verify(resetToken, process.env.JWT_SECRET);
+        if (payload.purpose !== 'password-reset') {
+            return res.status(400).json({ message: "Invalid reset token" });
+        }
+
+        const user = await User.findById(payload.id);
+        if (!user) {
+            return res.status(400).json({ message: "Invalid reset token" });
+        }
+
+        user.password = await bcrypt.hash(password, 10);
+        await user.save();
+
+        return res.status(200).json({ message: "Password reset successfully" });
+    } catch (error) {
+        return res.status(400).json({ message: "Reset token expired or invalid" });
     }
 };

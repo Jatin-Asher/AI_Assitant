@@ -3,10 +3,10 @@
 import { useTheme } from "next-themes";
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -16,8 +16,9 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       type="button"
       aria-label="Toggle theme"
     >
-      <span className="material-symbols-outlined dark:hidden">dark_mode</span>
-      <span className="material-symbols-outlined hidden dark:block">light_mode</span>
+      <span className="material-symbols-outlined">
+        {resolvedTheme === "dark" ? "light_mode" : "dark_mode"}
+      </span>
     </button>
   );
 }
