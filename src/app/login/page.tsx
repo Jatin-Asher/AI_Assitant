@@ -1,11 +1,111 @@
 "use client";
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [isLoginTab, setIsLoginTab] = useState(true);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    confirmPassword: '',
+    terms: false
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
+  const router = useRouter();
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+
+    if (name === 'confirmPassword') {
+      setPasswordMismatch(value !== formData.password);
+    }
+    if (name === 'password') {
+      setPasswordMismatch(formData.confirmPassword && value !== formData.confirmPassword);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        router.push('/dashboard');
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    if (!formData.terms) {
+      setError('Please accept the terms');
+      return;
+    }
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        router.push('/dashboard');
+      } else {
+        setError(data.message || 'Registration failed');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -79,12 +179,20 @@ export default function LoginPage() {
                 
                 <div className="form-container p-8 lg:p-12 bg-surface-container-lowest dark:bg-transparent">
                   {isLoginTab ? (
-                    <form action="#" className="space-y-6" id="login-form">
+                    <form onSubmit={handleLogin} className="space-y-6" id="login-form">
                       <div className="space-y-2">
                         <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-outline-variant ml-1">Email Address</label>
                         <div className="relative group">
                           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">mail</span>
-                          <input className="w-full pl-12 pr-4 py-4 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white placeholder:text-outline-variant/50" placeholder="scholar@atheneum.edu" type="email" />
+                          <input 
+                            name="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            className="w-full pl-12 pr-4 py-4 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white placeholder:text-outline-variant/50" 
+                            placeholder="scholar@atheneum.edu" 
+                            type="email" 
+                            required
+                          />
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -94,46 +202,106 @@ export default function LoginPage() {
                         </div>
                         <div className="relative group">
                           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">lock</span>
-                          <input className="w-full pl-12 pr-4 py-4 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white placeholder:text-outline-variant/50" placeholder="••••••••" type="password" />
+                          <input 
+                            name="password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            className="w-full pl-12 pr-4 py-4 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white placeholder:text-outline-variant/50" 
+                            placeholder="••••••••" 
+                            type="password" 
+                            required
+                          />
                         </div>
                       </div>
-                      <button className="w-full py-5 px-6 bg-gradient-to-br from-primary to-primary-container dark:from-primary-fixed dark:to-primary text-on-primary-container dark:text-on-primary font-headline font-bold rounded-DEFAULT shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 dark:shadow-none active:scale-[0.98] transition-all flex items-center justify-center gap-3" type="submit">
-                        <span className="tracking-wide">Enter the Session</span>
+                      {error && <p className="text-error text-sm">{error}</p>}
+                      <button 
+                        disabled={loading}
+                        className="w-full py-5 px-6 bg-gradient-to-br from-primary to-primary-container dark:from-primary-fixed dark:to-primary text-on-primary-container dark:text-on-primary font-headline font-bold rounded-DEFAULT shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 dark:shadow-none active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50" 
+                        type="submit"
+                      >
+                        <span className="tracking-wide">{loading ? 'Loading...' : 'Enter the Session'}</span>
                         <span className="material-symbols-outlined text-lg">arrow_forward</span>
                       </button>
                     </form>
                   ) : (
-                    <form action="#" className="space-y-5" id="register-form">
+                    <form onSubmit={handleRegister} className="space-y-5" id="register-form">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                           <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-outline-variant ml-1">Full Name</label>
-                          <input className="w-full px-4 py-3.5 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white" placeholder="Aristotle" type="text" />
+                          <input 
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-3.5 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white" 
+                            placeholder="Aristotle" 
+                            type="text" 
+                            required
+                          />
                         </div>
                         <div className="space-y-1.5">
                           <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-outline-variant ml-1">Email</label>
-                          <input className="w-full px-4 py-3.5 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white" placeholder="lyceum@edu.com" type="email" />
+                          <input 
+                            name="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-3.5 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white" 
+                            placeholder="lyceum@edu.com" 
+                            type="email" 
+                            required
+                          />
                         </div>
                       </div>
                       <div className="space-y-1.5">
                         <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-outline-variant ml-1">Create Password</label>
-                        <input className="w-full px-4 py-3.5 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white" placeholder="••••••••" type="password" />
+                        <input 
+                          name="password"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          className="w-full px-4 py-3.5 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white" 
+                          placeholder="••••••••" 
+                          type="password" 
+                          required
+                        />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-error dark:text-error/80 ml-1">Confirm Password</label>
-                        <input className="w-full px-4 py-3.5 bg-error-container/20 dark:bg-error/10 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-error transition-all font-medium text-on-surface dark:text-white" placeholder="••••••••" type="password" />
-                        <p className="text-[10px] text-error font-semibold flex items-center gap-1 mt-1 ml-1">
-                          <span className="material-symbols-outlined text-[14px]">info</span>
-                          Passwords do not match
-                        </p>
+                        <label className={`block text-[10px] font-bold uppercase tracking-[0.2em] ml-1 ${passwordMismatch ? 'text-error dark:text-error/80' : 'text-on-surface-variant/70 dark:text-outline-variant'}`}>Confirm Password</label>
+                        <input 
+                          name="confirmPassword"
+                          value={formData.confirmPassword}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 py-3.5 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 transition-all font-medium text-on-surface dark:text-white ${passwordMismatch ? 'border-error' : 'border-transparent focus:border-primary'}`} 
+                          placeholder="••••••••" 
+                          type="password" 
+                          required
+                        />
+                        {passwordMismatch && (
+                          <p className="text-[10px] text-error font-semibold flex items-center gap-1 mt-1 ml-1">
+                            <span className="material-symbols-outlined text-[14px]">info</span>
+                            Passwords do not match
+                          </p>
+                        )}
                       </div>
                       <div className="flex items-start gap-3 py-2">
-                        <input className="mt-1 rounded-sm text-primary dark:text-primary-fixed focus:ring-primary border-outline-variant dark:bg-on-surface/50" id="terms" type="checkbox" />
+                        <input 
+                          name="terms"
+                          checked={formData.terms}
+                          onChange={handleInputChange}
+                          className="mt-1 rounded-sm text-primary dark:text-primary-fixed focus:ring-primary border-outline-variant dark:bg-on-surface/50" 
+                          id="terms" 
+                          type="checkbox" 
+                          required
+                        />
                         <label className="text-[11px] text-on-surface-variant dark:text-outline-variant leading-relaxed" htmlFor="terms">
                           I agree to the <span className="text-primary dark:text-primary-fixed-dim font-bold cursor-pointer">Terms of Enlightenment</span> and acknowledge the Privacy Protocol of the Socratic AI.
                         </label>
                       </div>
-                      <button className="w-full py-4 px-6 bg-surface-container-high dark:bg-inverse-surface text-on-surface dark:text-surface-bright font-headline font-bold rounded-DEFAULT hover:bg-surface-variant dark:hover:bg-on-surface-variant active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-outline-variant/10" type="submit">
-                        <span>Create My Account</span>
+                      {error && <p className="text-error text-sm">{error}</p>}
+                      <button 
+                        disabled={loading || !formData.terms || passwordMismatch}
+                        className="w-full py-4 px-6 bg-surface-container-high dark:bg-inverse-surface text-on-surface dark:text-surface-bright font-headline font-bold rounded-DEFAULT hover:bg-surface-variant dark:hover:bg-on-surface-variant active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-outline-variant/10 disabled:opacity-50" 
+                        type="submit"
+                      >
+                        <span>{loading ? 'Creating...' : 'Create My Account'}</span>
                         <span className="material-symbols-outlined text-lg">person_add</span>
                       </button>
                     </form>

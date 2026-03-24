@@ -1,6 +1,10 @@
+"use client";
 import React from 'react';
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
+  const router = useRouter();
+
   return (
     <>
       {/* Top Navigation Bar */}
@@ -48,9 +52,12 @@ export default function LandingPage() {
                 <button className="px-8 py-4 rounded-DEFAULT bg-gradient-to-br from-primary to-primary-container text-white font-semibold text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
                   Get Started
                 </button>
-                <button className="px-8 py-4 rounded-DEFAULT bg-surface-container-high text-on-surface font-semibold text-lg hover:bg-surface-container-highest transition-all active:scale-95">
-                  Login
-                </button>
+               <button
+      onClick={() => router.push("/login")}
+      className="px-8 py-4 rounded-DEFAULT bg-surface-container-high text-on-surface font-semibold text-lg hover:bg-surface-container-highest transition-all active:scale-95"
+    >
+      Login
+    </button>
               </div>
             </div>
             
