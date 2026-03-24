@@ -1,11 +1,5 @@
 "use client";
 import React from 'react';
-<<<<<<< HEAD
-import { useRouter } from "next/navigation";
-
-export default function LandingPage() {
-  const router = useRouter();
-=======
 import Link from 'next/link';
 import { useTheme } from "next-themes";
 
@@ -15,7 +9,6 @@ export default function LandingPage() {
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
->>>>>>> 0f2fd244c1460472485490b296c6722118163c6f
 
   return (
     <>
@@ -64,19 +57,10 @@ export default function LandingPage() {
                 <button className="px-6 md:px-8 py-3 md:py-4 rounded-DEFAULT bg-gradient-to-br from-primary to-primary-container text-on-primary font-semibold text-base md:text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-95 w-full sm:w-auto">
                   Get Started
                 </button>
-<<<<<<< HEAD
-               <button
-      onClick={() => router.push("/login")}
-      className="px-8 py-4 rounded-DEFAULT bg-surface-container-high text-on-surface font-semibold text-lg hover:bg-surface-container-highest transition-all active:scale-95"
-    >
-      Login
-    </button>
-=======
 
                 <Link href="/login" className="px-6 md:px-8 py-3 md:py-4 rounded-DEFAULT bg-surface-container-high dark:bg-gray-800 text-on-surface dark:text-gray-100 font-semibold text-base md:text-lg hover:bg-surface-container-highest dark:hover:bg-gray-700 transition-all active:scale-95 w-full sm:w-auto text-center inline-block">
                   Log In
                 </Link>
->>>>>>> 0f2fd244c1460472485490b296c6722118163c6f
               </div>
               <p className="text-sm text-primary font-medium mt-4">
                 <span role="img" aria-label="Not a chatbot">🚫</span> Not a chatbot. A guided learning system.

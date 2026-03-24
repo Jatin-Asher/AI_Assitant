@@ -1,47 +1,48 @@
 "use client";
+
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ThemeToggle } from '../../components/theme-toggle';
 
 export default function LoginPage() {
   const [isLoginTab, setIsLoginTab] = useState(true);
-<<<<<<< HEAD
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     name: '',
     confirmPassword: '',
-    terms: false
+    terms: false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
-  const router = useRouter();
-=======
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
->>>>>>> 0f2fd244c1460472485490b296c6722118163c6f
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
 
     if (name === 'confirmPassword') {
       setPasswordMismatch(value !== formData.password);
     }
+
     if (name === 'password') {
-      setPasswordMismatch(formData.confirmPassword && value !== formData.confirmPassword);
+      setPasswordMismatch(Boolean(formData.confirmPassword) && value !== formData.confirmPassword);
+    }
+
+    if (error) {
+      setError('');
     }
   };
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -66,23 +67,27 @@ export default function LoginPage() {
       } else {
         setError(data.message || 'Login failed');
       }
-    } catch (err) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRegister = async (e) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setPasswordMismatch(true);
       return;
     }
+
     if (!formData.terms) {
       setError('Please accept the terms');
       return;
     }
+
     setLoading(true);
     setError('');
 
@@ -107,310 +112,195 @@ export default function LoginPage() {
       } else {
         setError(data.message || 'Registration failed');
       }
-    } catch (err) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <>
+  const panelClass = 'w-full border rounded-2xl px-4 py-3.5 transition-all font-medium';
 
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-primary/5 dark:bg-primary/10 blur-[120px]"></div>
-        <div className="absolute -bottom-[10%] -right-[5%] w-[50%] h-[50%] rounded-full bg-secondary/5 dark:bg-secondary/10 blur-[100px]"></div>
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(196,181,253,0.35),_transparent_26%),linear-gradient(140deg,_#faf5ff_0%,_#f5f3ff_42%,_#eef2ff_100%)] text-slate-900 dark:bg-[radial-gradient(circle_at_top_left,_rgba(88,28,135,0.55),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(76,29,149,0.35),_transparent_24%),linear-gradient(145deg,_#03040a_0%,_#0a0814_40%,_#130d24_100%)] dark:text-white">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -left-20 top-10 h-80 w-80 rounded-full bg-violet-300/35 blur-3xl dark:bg-violet-950/50"></div>
+        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-fuchsia-200/40 blur-3xl dark:bg-fuchsia-950/30"></div>
+      </div>
+
+      <div className="absolute right-6 top-6 z-20">
+        <ThemeToggle />
       </div>
 
       <main className="relative z-10 min-h-screen flex items-center justify-center p-6 md:p-12">
         <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
-          
-          {/* Header */}
-          <header className="text-center lg:text-left space-y-6">
+          <header className="text-center lg:text-left space-y-7">
             <div className="flex items-center justify-center lg:justify-start gap-4">
-              <div className="p-3 bg-primary/10 dark:bg-primary/20 rounded-2xl">
-                <span className="material-symbols-outlined text-5xl lg:text-6xl text-primary dark:text-primary-fixed" style={{fontVariationSettings: "'FILL' 1"}}>menu_book</span>
+              <div className="rounded-3xl border border-violet-300/50 bg-white/70 p-4 shadow-[0_0_40px_rgba(167,139,250,0.22)] dark:border-violet-500/25 dark:bg-violet-950/50 dark:shadow-[0_0_40px_rgba(109,40,217,0.22)]">
+                <span className="material-symbols-outlined text-5xl lg:text-6xl text-violet-700 dark:text-violet-300" style={{ fontVariationSettings: "'FILL' 1" }}>menu_book</span>
               </div>
-              <h1 className="font-headline text-4xl lg:text-6xl font-extrabold tracking-tight text-primary dark:text-primary-fixed italic">Socratic AI Tutor</h1>
+              <h1 className="font-headline text-4xl lg:text-6xl font-extrabold tracking-tight text-slate-950 dark:text-white italic">Socratic AI Tutor</h1>
             </div>
+
             <div className="space-y-4">
-              <h2 className="font-headline text-2xl lg:text-4xl font-bold text-on-surface dark:text-surface-bright leading-tight">
-                Your Personal Atheneum for <span className="text-primary dark:text-primary-fixed-dim">Guided Discovery</span>.
+              <h2 className="font-headline text-2xl lg:text-4xl font-bold leading-tight text-slate-900 dark:text-white">
+                Learn in a clean light space, switch to <span className="text-violet-700 dark:text-violet-300">black-purple focus mode</span>.
               </h2>
-              <p className="font-headline text-on-surface-variant dark:text-outline-variant text-lg lg:text-xl max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                Step away from rote memorization. Engage with an AI designed to ask the right questions, helping you build deep, lasting intuition in any subject.
+              <p className="font-headline text-slate-600 dark:text-violet-100/70 text-lg lg:text-xl max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                Ask questions, explore ideas, and build intuition through guided reasoning instead of copied solutions.
               </p>
-            </div>
-            
-            <div className="hidden lg:grid grid-cols-2 gap-4 mt-12">
-              <div className="p-4 rounded-xl bg-surface-container-low dark:bg-inverse-surface/30 border border-outline-variant/20">
-                <span className="material-symbols-outlined text-primary mb-2">Psychology</span>
-                <h4 className="font-bold text-sm">Active Inquiry</h4>
-                <p className="text-xs opacity-70">Master topics through dialogue, not monologues.</p>
-              </div>
-              <div className="p-4 rounded-xl bg-surface-container-low dark:bg-inverse-surface/30 border border-outline-variant/20">
-                <span className="material-symbols-outlined text-secondary mb-2">Self_Improvement</span>
-                <h4 className="font-bold text-sm">Deep Focus</h4>
-                <p className="text-xs opacity-70">A distraction-free environment for serious scholars.</p>
-              </div>
             </div>
           </header>
 
-          {/* Authentication Card */}
           <div className="w-full max-w-xl mx-auto">
-            <div className="glass-panel rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden border border-white/20 dark:border-white/5 transition-all">
-              
-              <div>
-                <div className="tab-labels flex bg-surface-container-low dark:bg-inverse-surface/50 px-8 pt-6 border-b border-outline-variant/10">
-                  <button 
-                    onClick={() => setIsLoginTab(true)}
-                    className={`px-8 py-4 font-headline font-bold text-xs tracking-widest cursor-pointer transition-all duration-300 border-b-2 ${isLoginTab ? 'text-primary border-primary dark:text-primary-fixed dark:border-primary-fixed' : 'border-transparent text-slate-400 dark:text-outline hover:text-on-surface-variant dark:hover:text-surface-bright'}`}
-                  >
-                    LOGIN
-                  </button>
-                  <button 
-                    onClick={() => setIsLoginTab(false)}
-                    className={`px-8 py-4 font-headline font-bold text-xs tracking-widest cursor-pointer transition-all duration-300 border-b-2 ${!isLoginTab ? 'text-primary border-primary dark:text-primary-fixed dark:border-primary-fixed' : 'border-transparent text-slate-400 dark:text-outline hover:text-on-surface-variant dark:text-gray-300 dark:hover:text-surface-bright'}`}
-                  >
-                    REGISTER
-                  </button>
-                </div>
-                
-                <div className="form-container p-8 lg:p-12 bg-surface-container-lowest dark:bg-transparent">
-                  {isLoginTab ? (
-<<<<<<< HEAD
-                    <form onSubmit={handleLogin} className="space-y-6" id="login-form">
-=======
-                    <form className="space-y-6" id="login-form" onSubmit={handleSubmit}>
->>>>>>> 0f2fd244c1460472485490b296c6722118163c6f
-                      <div className="space-y-2">
-                        <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-gray-300/70 dark:text-outline-variant ml-1">Email Address</label>
-                        <div className="relative group">
-                          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">mail</span>
-<<<<<<< HEAD
-                          <input 
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            className="w-full pl-12 pr-4 py-4 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white placeholder:text-outline-variant/50" 
-                            placeholder="scholar@atheneum.edu" 
-                            type="email" 
-                            required
-                          />
-=======
-                          <input className="w-full pl-12 pr-4 py-4 bg-surface-container-low dark:bg-purple-950/40 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-purple-900/40 border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-gray-100 placeholder:text-outline-variant/50" placeholder="scholar@atheneum.edu" type="email" />
->>>>>>> 0f2fd244c1460472485490b296c6722118163c6f
-                        </div>
+            <div className="overflow-hidden rounded-[2rem] border border-violet-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(245,243,255,0.9))] shadow-[0_24px_70px_rgba(148,163,184,0.2)] backdrop-blur-xl dark:border-violet-500/15 dark:bg-[linear-gradient(180deg,rgba(12,10,25,0.96),rgba(19,15,38,0.92))] dark:shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
+              <div className="tab-labels flex bg-violet-50/80 px-8 pt-6 border-b border-violet-200 dark:bg-black/20 dark:border-violet-500/10">
+                <button
+                  onClick={() => setIsLoginTab(true)}
+                  className={`px-8 py-4 font-headline font-bold text-xs tracking-widest cursor-pointer transition-all duration-300 border-b-2 ${isLoginTab ? 'text-violet-800 border-violet-600 dark:text-violet-200 dark:border-violet-400' : 'border-transparent text-violet-400 hover:text-violet-700 dark:text-violet-200/45 dark:hover:text-violet-200/80'}`}
+                >
+                  LOGIN
+                </button>
+                <button
+                  onClick={() => setIsLoginTab(false)}
+                  className={`px-8 py-4 font-headline font-bold text-xs tracking-widest cursor-pointer transition-all duration-300 border-b-2 ${!isLoginTab ? 'text-violet-800 border-violet-600 dark:text-violet-200 dark:border-violet-400' : 'border-transparent text-violet-400 hover:text-violet-700 dark:text-violet-200/45 dark:hover:text-violet-200/80'}`}
+                >
+                  REGISTER
+                </button>
+              </div>
+
+              <div className="p-8 lg:p-12">
+                {isLoginTab ? (
+                  <form onSubmit={handleLogin} className="space-y-6" id="login-form">
+                    <div className="space-y-2">
+                      <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 ml-1 dark:text-violet-100/60">Email Address</label>
+                      <input
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className={`${panelClass} bg-white border-violet-200 text-slate-900 placeholder:text-violet-300/80 focus:bg-violet-50/70 focus:border-violet-500 dark:bg-violet-950/35 dark:border-violet-500/10 dark:text-white dark:placeholder:text-violet-100/30 dark:focus:bg-violet-950/55 dark:focus:border-violet-500/50`}
+                        placeholder="scholar@atheneum.edu"
+                        type="email"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center ml-1">
+                        <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-violet-100/60">Password</label>
+                        <a className="text-[10px] font-bold text-violet-700 hover:underline transition-colors uppercase tracking-widest dark:text-violet-300" href="#">Forgot?</a>
                       </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center ml-1">
-                          <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-gray-300/70 dark:text-outline-variant">Password</label>
-                          <a className="text-[10px] font-bold text-primary dark:text-primary-fixed-dim hover:underline transition-colors uppercase tracking-widest" href="#">Forgot?</a>
-                        </div>
-                        <div className="relative group">
-                          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">lock</span>
-<<<<<<< HEAD
-                          <input 
-                            name="password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            className="w-full pl-12 pr-4 py-4 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white placeholder:text-outline-variant/50" 
-                            placeholder="••••••••" 
-                            type="password" 
-                            required
-                          />
-                        </div>
-                      </div>
-                      {error && <p className="text-error text-sm">{error}</p>}
-                      <button 
-                        disabled={loading}
-                        className="w-full py-5 px-6 bg-gradient-to-br from-primary to-primary-container dark:from-primary-fixed dark:to-primary text-on-primary-container dark:text-on-primary font-headline font-bold rounded-DEFAULT shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 dark:shadow-none active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50" 
-                        type="submit"
-                      >
-                        <span className="tracking-wide">{loading ? 'Loading...' : 'Enter the Session'}</span>
-=======
-                          <input className="w-full pl-12 pr-12 py-4 bg-surface-container-low dark:bg-purple-950/40 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-purple-900/40 border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-gray-100 placeholder:text-outline-variant/50" placeholder="••••••••" type={showLoginPassword ? "text" : "password"} />
-                          <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-primary transition-colors flex items-center justify-center">
-                            <span className="material-symbols-outlined">{showLoginPassword ? 'visibility_off' : 'visibility'}</span>
-                          </button>
-                        </div>
-                      </div>
-                      <button className="w-full py-5 px-6 bg-gradient-to-br from-primary to-primary-container dark:from-primary-fixed dark:to-primary text-on-primary-container dark:text-on-primary font-headline font-bold rounded-DEFAULT shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 dark:shadow-none active:scale-[0.98] transition-all flex items-center justify-center gap-3" type="submit">
-                        <span className="tracking-wide">Log In</span>
->>>>>>> 0f2fd244c1460472485490b296c6722118163c6f
-                        <span className="material-symbols-outlined text-lg">arrow_forward</span>
-                      </button>
-                      
-                      <div className="mt-6 text-center">
-                        <p className="text-[11px] text-on-surface-variant dark:text-gray-300 font-body">
-                          Don't have an account?{' '}
-                          <button 
-                            type="button"
-                            onClick={() => setIsLoginTab(false)} 
-                            className="text-primary dark:text-primary-fixed-dim font-bold hover:underline transition-all tracking-wide"
-                          >
-                            Create one first
-                          </button>
-                        </p>
-                      </div>
-                    </form>
-                  ) : (
-<<<<<<< HEAD
-                    <form onSubmit={handleRegister} className="space-y-5" id="register-form">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-outline-variant ml-1">Full Name</label>
-                          <input 
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            className="w-full px-4 py-3.5 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white" 
-                            placeholder="Aristotle" 
-                            type="text" 
-                            required
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-outline-variant ml-1">Email</label>
-                          <input 
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            className="w-full px-4 py-3.5 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white" 
-                            placeholder="lyceum@edu.com" 
-                            type="email" 
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-outline-variant ml-1">Create Password</label>
-                        <input 
+                      <div className="relative">
+                        <input
                           name="password"
                           value={formData.password}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-3.5 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-white" 
-                          placeholder="••••••••" 
-                          type="password" 
+                          className={`${panelClass} pr-12 bg-white border-violet-200 text-slate-900 placeholder:text-violet-300/80 focus:bg-violet-50/70 focus:border-violet-500 dark:bg-violet-950/35 dark:border-violet-500/10 dark:text-white dark:placeholder:text-violet-100/30 dark:focus:bg-violet-950/55 dark:focus:border-violet-500/50`}
+                          placeholder="********"
+                          type={showLoginPassword ? 'text' : 'password'}
                           required
                         />
+                        <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-violet-400/80 hover:text-violet-700 dark:text-violet-200/40 dark:hover:text-violet-300">
+                          <span className="material-symbols-outlined">{showLoginPassword ? 'visibility_off' : 'visibility'}</span>
+                        </button>
                       </div>
-                      <div className="space-y-1.5">
-                        <label className={`block text-[10px] font-bold uppercase tracking-[0.2em] ml-1 ${passwordMismatch ? 'text-error dark:text-error/80' : 'text-on-surface-variant/70 dark:text-outline-variant'}`}>Confirm Password</label>
-                        <input 
-                          name="confirmPassword"
-                          value={formData.confirmPassword}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 py-3.5 bg-surface-container-low dark:bg-inverse-surface/50 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-inverse-surface border-b-2 transition-all font-medium text-on-surface dark:text-white ${passwordMismatch ? 'border-error' : 'border-transparent focus:border-primary'}`} 
-                          placeholder="••••••••" 
-                          type="password" 
-                          required
-                        />
-                        {passwordMismatch && (
-                          <p className="text-[10px] text-error font-semibold flex items-center gap-1 mt-1 ml-1">
-                            <span className="material-symbols-outlined text-[14px]">info</span>
-                            Passwords do not match
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-start gap-3 py-2">
-                        <input 
-                          name="terms"
-                          checked={formData.terms}
-                          onChange={handleInputChange}
-                          className="mt-1 rounded-sm text-primary dark:text-primary-fixed focus:ring-primary border-outline-variant dark:bg-on-surface/50" 
-                          id="terms" 
-                          type="checkbox" 
-                          required
-                        />
-                        <label className="text-[11px] text-on-surface-variant dark:text-outline-variant leading-relaxed" htmlFor="terms">
-                          I agree to the <span className="text-primary dark:text-primary-fixed-dim font-bold cursor-pointer">Terms of Enlightenment</span> and acknowledge the Privacy Protocol of the Socratic AI.
-                        </label>
-                      </div>
-                      {error && <p className="text-error text-sm">{error}</p>}
-                      <button 
-                        disabled={loading || !formData.terms || passwordMismatch}
-                        className="w-full py-4 px-6 bg-surface-container-high dark:bg-inverse-surface text-on-surface dark:text-surface-bright font-headline font-bold rounded-DEFAULT hover:bg-surface-variant dark:hover:bg-on-surface-variant active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-outline-variant/10 disabled:opacity-50" 
-                        type="submit"
-                      >
-                        <span>{loading ? 'Creating...' : 'Create My Account'}</span>
-=======
-                    <form className="space-y-5" id="register-form" onSubmit={handleSubmit}>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-gray-300/70 dark:text-outline-variant ml-1">Full Name</label>
-                          <input className="w-full px-4 py-3.5 bg-surface-container-low dark:bg-purple-950/40 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-purple-900/40 border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-gray-100 dark:text-white" placeholder="Aristotle" type="text" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-gray-300/70 dark:text-outline-variant ml-1">Email</label>
-                          <input className="w-full px-4 py-3.5 bg-surface-container-low dark:bg-purple-950/40 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-purple-900/40 border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-gray-100 dark:text-white" placeholder="lyceum@edu.com" type="email" />
-                        </div>
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-gray-300/70 dark:text-outline-variant ml-1">Create Password</label>
-                        <div className="relative group">
-                          <input className="w-full pl-4 pr-12 py-3.5 bg-surface-container-low dark:bg-purple-950/40 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-purple-900/40 border-b-2 border-transparent focus:border-primary transition-all font-medium text-on-surface dark:text-gray-100 dark:text-white" placeholder="••••••••" type={showRegisterPassword ? "text" : "password"} />
-                          <button type="button" onClick={() => setShowRegisterPassword(!showRegisterPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-primary transition-colors flex items-center justify-center">
-                            <span className="material-symbols-outlined">{showRegisterPassword ? 'visibility_off' : 'visibility'}</span>
-                          </button>
-                        </div>
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-error dark:text-error/80 ml-1">Confirm Password</label>
-                        <div className="relative group">
-                          <input className="w-full pl-4 pr-12 py-3.5 bg-error-container/20 dark:bg-error/10 border-none rounded-DEFAULT focus:ring-0 focus:bg-surface-container-lowest dark:focus:bg-purple-900/40 border-b-2 border-error transition-all font-medium text-on-surface dark:text-gray-100 dark:text-white" placeholder="••••••••" type={showConfirmPassword ? "text" : "password"} />
-                          <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-error hover:text-error/80 transition-colors flex items-center justify-center">
-                            <span className="material-symbols-outlined">{showConfirmPassword ? 'visibility_off' : 'visibility'}</span>
-                          </button>
-                        </div>
-                        <p className="text-[10px] text-error font-semibold flex items-center gap-1 mt-1 ml-1">
-                          <span className="material-symbols-outlined text-[14px]">info</span>
-                          Passwords do not match
-                        </p>
-                      </div>
-                      <div className="flex items-start gap-3 py-2">
-                        <input className="mt-1 rounded-sm text-primary dark:text-primary-fixed focus:ring-primary border-outline-variant dark:bg-on-surface/50" id="terms" type="checkbox" />
-                        <label className="text-[11px] text-on-surface-variant dark:text-gray-300 dark:text-outline-variant leading-relaxed" htmlFor="terms">
-                          I agree to the <span className="text-primary dark:text-primary-fixed-dim font-bold cursor-pointer">Terms of Enlightenment</span> and acknowledge the Privacy Protocol of the Socratic AI.
-                        </label>
-                      </div>
-                      <button className="w-full py-4 px-6 bg-surface-container-high dark:bg-inverse-surface text-on-surface dark:text-gray-100 dark:text-surface-bright font-headline font-bold rounded-DEFAULT hover:bg-surface-variant dark:hover:bg-on-surface-variant active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-outline-variant/10" type="submit">
-                        <span>Create My Account</span>
->>>>>>> 0f2fd244c1460472485490b296c6722118163c6f
-                        <span className="material-symbols-outlined text-lg">person_add</span>
-                      </button>
-                      
-                      <div className="mt-5 text-center">
-                        <p className="text-[11px] text-on-surface-variant dark:text-gray-300 font-body">
-                          Already have an account?{' '}
-                          <button 
-                            type="button"
-                            onClick={() => setIsLoginTab(true)} 
-                            className="text-primary dark:text-primary-fixed-dim font-bold hover:underline transition-all tracking-wide"
-                          >
-                            Log in instead
-                          </button>
-                        </p>
-                      </div>
-                    </form>
-                  )}
-                </div>
-              </div>
-              
+                    </div>
 
+                    {error && <p className="text-red-500 dark:text-red-300 text-sm">{error}</p>}
+
+                    <button
+                      disabled={loading}
+                      className="w-full py-5 px-6 bg-gradient-to-r from-violet-800 to-violet-600 text-white font-headline font-bold rounded-DEFAULT shadow-[0_18px_40px_rgba(109,40,217,0.24)] hover:shadow-[0_22px_50px_rgba(109,40,217,0.3)] dark:from-violet-950 dark:via-violet-800 dark:to-violet-700 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                      type="submit"
+                    >
+                      <span className="tracking-wide">{loading ? 'Loading...' : 'Enter the Session'}</span>
+                      <span className="material-symbols-outlined text-lg">arrow_forward</span>
+                    </button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleRegister} className="space-y-5" id="register-form">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <input
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className={`${panelClass} bg-white border-violet-200 text-slate-900 focus:bg-violet-50/70 focus:border-violet-500 dark:bg-violet-950/35 dark:border-violet-500/10 dark:text-white dark:focus:bg-violet-950/55 dark:focus:border-violet-500/50`}
+                        placeholder="Full Name"
+                        type="text"
+                        required
+                      />
+                      <input
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className={`${panelClass} bg-white border-violet-200 text-slate-900 focus:bg-violet-50/70 focus:border-violet-500 dark:bg-violet-950/35 dark:border-violet-500/10 dark:text-white dark:focus:bg-violet-950/55 dark:focus:border-violet-500/50`}
+                        placeholder="Email"
+                        type="email"
+                        required
+                      />
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        className={`${panelClass} pr-12 bg-white border-violet-200 text-slate-900 focus:bg-violet-50/70 focus:border-violet-500 dark:bg-violet-950/35 dark:border-violet-500/10 dark:text-white dark:focus:bg-violet-950/55 dark:focus:border-violet-500/50`}
+                        placeholder="Create Password"
+                        type={showRegisterPassword ? 'text' : 'password'}
+                        required
+                      />
+                      <button type="button" onClick={() => setShowRegisterPassword(!showRegisterPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-violet-400/80 hover:text-violet-700 dark:text-violet-200/40 dark:hover:text-violet-300">
+                        <span className="material-symbols-outlined">{showRegisterPassword ? 'visibility_off' : 'visibility'}</span>
+                      </button>
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        className={`${panelClass} pr-12 ${passwordMismatch ? 'border-red-400/60 text-slate-900 dark:text-white' : 'border-violet-200 text-slate-900 dark:border-violet-500/10 dark:text-white'} bg-white focus:bg-violet-50/70 focus:border-violet-500 dark:bg-violet-950/35 dark:focus:bg-violet-950/55 dark:focus:border-violet-500/50`}
+                        placeholder="Confirm Password"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        required
+                      />
+                      <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className={`absolute right-4 top-1/2 -translate-y-1/2 ${passwordMismatch ? 'text-red-500 dark:text-red-300' : 'text-violet-400/80 hover:text-violet-700 dark:text-violet-200/40 dark:hover:text-violet-300'}`}>
+                        <span className="material-symbols-outlined">{showConfirmPassword ? 'visibility_off' : 'visibility'}</span>
+                      </button>
+                    </div>
+
+                    {passwordMismatch && <p className="text-[10px] text-red-500 dark:text-red-300 font-semibold">Passwords do not match</p>}
+
+                    <label className="flex items-start gap-3 py-2 text-[11px] text-slate-500 dark:text-violet-100/60">
+                      <input
+                        name="terms"
+                        checked={formData.terms}
+                        onChange={handleInputChange}
+                        className="mt-1 rounded-sm border-violet-300 bg-white text-violet-600 focus:ring-violet-500 dark:border-violet-500/30 dark:bg-black/40 dark:text-violet-400"
+                        type="checkbox"
+                        required
+                      />
+                      <span>I agree to the <span className="text-violet-700 dark:text-violet-300 font-bold">Terms of Enlightenment</span>.</span>
+                    </label>
+
+                    {error && <p className="text-red-500 dark:text-red-300 text-sm">{error}</p>}
+
+                    <button
+                      disabled={loading || !formData.terms || passwordMismatch}
+                      className="w-full py-4 px-6 bg-gradient-to-r from-violet-800 to-violet-600 text-white font-headline font-bold rounded-DEFAULT shadow-[0_18px_40px_rgba(109,40,217,0.24)] hover:shadow-[0_22px_50px_rgba(109,40,217,0.3)] dark:from-violet-950 dark:via-violet-800 dark:to-violet-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                      type="submit"
+                    >
+                      <span>{loading ? 'Creating...' : 'Create My Account'}</span>
+                      <span className="material-symbols-outlined text-lg">person_add</span>
+                    </button>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
-          
-          <footer className="mt-10 text-center lg:text-left text-on-surface-variant/60 dark:text-outline-variant/50 text-[11px] font-medium tracking-wide">
-            <p>© 2024 Socratic AI Tutor. All queries lead to wisdom.</p>
-            <div className="flex justify-center lg:justify-start gap-6 mt-4">
-              <a className="hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Privacy Policy</a>
-              <a className="hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Security Protocols</a>
-              <a className="hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Contact Proctors</a>
-            </div>
-          </footer>
         </div>
       </main>
-    </>
+    </div>
   );
 }
