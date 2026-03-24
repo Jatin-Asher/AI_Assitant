@@ -166,6 +166,12 @@ export default function LoginPage() {
       }
 
       localStorage.setItem('token', data.token);
+      if (data.user?.name) {
+        localStorage.setItem('userName', data.user.name);
+      }
+      if (data.user?.email) {
+        localStorage.setItem('userEmail', data.user.email);
+      }
       router.replace('/dashboard');
     } catch {
       setError('Network error. Please try again.');

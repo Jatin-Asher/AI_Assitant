@@ -17,21 +17,51 @@ export default function DashboardPage() {
   const [selectedSubject, setSelectedSubject] = useState('Physics');
   const [historyEntries, setHistoryEntries] = useState([]);
   const [menuOpenId, setMenuOpenId] = useState(null);
+  const [userName, setUserName] = useState('Learner');
   const router = useRouter();
 
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    if (!token) {
-      router.replace('/login');
-      return;
-    }
+    const initializeDashboard = async () => {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (!token) {
+        router.replace('/login');
+        return;
+      }
 
-    const storedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    setHistoryEntries(storedHistory);
-    setLoading(false);
+      try {
+        const response = await fetch('http://localhost:5000/api/auth/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Unable to load your profile.');
+        }
+
+        if (data.user?.name) {
+          setUserName(data.user.name);
+        }
+
+        const storedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        setHistoryEntries(storedHistory);
+        setLoading(false);
+      } catch {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userEmail');
+        router.replace('/login');
+      }
+    };
+
+    void initializeDashboard();
 
     const handleProtectedBackNavigation = () => {
       localStorage.removeItem('token');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userEmail');
       router.replace('/login');
     };
 
@@ -173,7 +203,7 @@ export default function DashboardPage() {
         <div className="flex-1 flex items-center justify-center p-8">
           <div className="w-full max-w-3xl">
             <div className="mb-2">
-              <h2 className="text-4xl font-bold mb-1">Welcome to Socratic AI Tutor</h2>
+              <h2 className="text-4xl font-bold mb-1">Welcome {userName}</h2>
               <p className="text-slate-500 text-lg dark:text-slate-400">Start a New Learning Session</p>
             </div>
 

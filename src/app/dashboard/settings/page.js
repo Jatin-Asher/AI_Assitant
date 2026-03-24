@@ -88,6 +88,12 @@ export default function SettingsPage() {
       }
 
       setMessage(data.message || 'Username updated successfully.');
+      if (data.user?.name) {
+        localStorage.setItem('userName', data.user.name);
+      }
+      if (data.user?.email) {
+        localStorage.setItem('userEmail', data.user.email);
+      }
       setFormData((prev) => ({ ...prev, password: '' }));
     } catch (err) {
       setError(err.message || 'Unable to update username.');

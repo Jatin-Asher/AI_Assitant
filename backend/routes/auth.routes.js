@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   registerUser,
   loginUser,
+  getCurrentUser,
   updateUsername,
   getSecurityQuestions,
   verifySecurityAnswers,
@@ -12,6 +13,7 @@ const {
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+router.get('/me', getCurrentUser);
 router.patch('/username', updateUsername);
 router.post('/forgot-password/questions', getSecurityQuestions);
 router.post('/forgot-password/verify', verifySecurityAnswers);
