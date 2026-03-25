@@ -2,13 +2,29 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { 
+  Layout, 
+  MessageSquare, 
+  Activity, 
+  User, 
+  MoreVertical, 
+  Trash2, 
+  Brain,
+  History,
+  Dashboard,
+  Timer,
+  Maximize2,
+  Trophy,
+  Zap,
+  Clock
+} from 'lucide-react';
 import { FocusModeToggle } from '../../../components/FocusModeToggle';
 import { SessionTimer } from '../../../components/SessionTimer';
 import { VoiceInput } from '../../../components/VoiceInput';
 import { useFocusMode } from '../../../context/FocusModeContext';
 import { useSessionTimer } from '../../../hooks/useSessionTimer';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'http://localhost:5001';
 const STORAGE_KEY = 'socratic-session-history';
 const ACTIVE_SESSION_KEY = 'socratic-active-session';
 
@@ -44,6 +60,8 @@ export default function SessionPage() {
   const [historyEntries, setHistoryEntries] = useState([]);
   const [isSending, setIsSending] = useState(false);
   const [menuOpenId, setMenuOpenId] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+  const [stats, setStats] = useState({ totalSessions: 0, totalHours: 0, conceptsMastered: 0 });
   const router = useRouter();
   const searchParams = useSearchParams();
   const autoStartedRef = useRef(false);
@@ -61,29 +79,72 @@ export default function SessionPage() {
   );
 
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    if (!token) {
-      router.replace('/login');
-      return;
-    }
+    const initializeSession = async () => {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (!token) {
+        router.replace('/login');
+        return;
+      }
 
-    const storedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    setHistoryEntries(storedHistory);
+      // Fetch user profile for avatar/name
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserProfile(data.user);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch user profile:', err);
+      }
 
-    const existingSession = storedHistory.find((entry) => entry.id === sessionId);
-    if (existingSession?.messages?.length) {
-      setMessages(existingSession.messages);
-    }
+      const progressResponse = await fetch(`${API_BASE_URL}/api/session/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify({
-      id: sessionId,
-      subject,
-      question: startingQuestion,
-      updatedAt: Date.now(),
-    }));
+      if (progressResponse.ok) {
+        const progressData = await progressResponse.json();
+        const serverHistory = progressData.sessions || [];
+        setHistoryEntries(serverHistory);
+        if (progressData.stats) {
+          setStats(progressData.stats);
+        }
+        
+        const existingSession = serverHistory.find((entry) => entry.id === sessionId);
+        if (existingSession?.messages?.length) {
+          setMessages(existingSession.messages);
+        }
+      } else {
+        // Fallback to local if server fails
+        const storedHistory = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        setHistoryEntries(storedHistory);
+        const existingSession = storedHistory.find((entry) => entry.id === sessionId);
+        if (existingSession?.messages?.length) {
+          setMessages(existingSession.messages);
+        }
+      }
 
-    setLoading(false);
-  }, [router, sessionId]);
+      try {
+        localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify({
+          id: sessionId,
+          subject,
+          question: startingQuestion,
+          updatedAt: Date.now(),
+        }));
+      } catch (e) {
+        if (e.name === 'QuotaExceededError') {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+
+      setLoading(false);
+    };
+
+    void initializeSession();
+  }, [router, sessionId, subject, startingQuestion]);
 
   const persistHistory = (nextMessages, latestAssistantReply = '') => {
     const previewSource = latestAssistantReply || nextMessages[nextMessages.length - 1]?.content || startingQuestion;
@@ -101,7 +162,13 @@ export default function SessionPage() {
     });
 
     setHistoryEntries(nextHistory);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextHistory));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(nextHistory));
+    } catch (e) {
+      if (e.name === 'QuotaExceededError') {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
   };
 
   const sendMessage = async (messageText, action = 'guide') => {
@@ -181,6 +248,40 @@ export default function SessionPage() {
     autoStartedRef.current = true;
     void sendMessage(startingQuestion, 'guide');
   }, [loading, startingQuestion, messages.length]);
+
+  // Periodic Session Sync (Autosave)
+  useEffect(() => {
+    if (loading) return;
+
+    const syncInterval = setInterval(async () => {
+      const token = localStorage.getItem('token');
+      if (!token || messages.length === 0) return;
+
+      const recentUserQuestion = [...messages].reverse().find((m) => m.role === 'user')?.content || startingQuestion;
+      const lastPreview = [...messages].reverse().find((m) => m.role === 'assistant')?.content || recentUserQuestion;
+
+      try {
+        await fetch(`${API_BASE_URL}/api/session/end`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            sessionId,
+            timeSpent: elapsedSeconds,
+            subject,
+            recentQuestion: recentUserQuestion,
+            preview: lastPreview,
+          }),
+        });
+      } catch (err) {
+        console.warn('[AUTOSAVE ERROR]', err);
+      }
+    }, 60000); // Sync every 60 seconds
+
+    return () => clearInterval(syncInterval);
+  }, [loading, messages, elapsedSeconds, sessionId, subject, startingQuestion]);
 
   const handleEndSession = async () => {
     const existingHistory = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -273,41 +374,59 @@ export default function SessionPage() {
               onClick={() => router.push('/dashboard/overview')}
               className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
             >
-              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">dashboard</span>
+              <Layout size={18} className="text-violet-700/80 dark:text-violet-300/80" />
               <span className="font-medium">Tutor Dashboard</span>
             </button>
             <button
               onClick={() => router.push('/dashboard')}
               className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
             >
-              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">chat</span>
+              <MessageSquare size={18} className="text-violet-700/80 dark:text-violet-300/80" />
               <span className="font-medium">My Sessions</span>
             </button>
             <button
               onClick={() => router.push('/dashboard/progress')}
               className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
             >
-              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">monitoring</span>
+              <Activity size={18} className="text-violet-700/80 dark:text-violet-300/80" />
               <span className="font-medium">Learning Progress</span>
             </button>
             <button
               onClick={() => router.push('/dashboard/settings')}
               className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
             >
-              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">settings</span>
-              <span className="font-medium">User Settings</span>
+              <User size={18} className="text-violet-700/80 dark:text-violet-300/80" />
+              <span className="font-medium">Profile</span>
             </button>
           </nav>
 
-          <div className="mt-12 rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
-            <p className="text-xs uppercase tracking-[0.25em] text-violet-700/80 dark:text-violet-200/70">Current Subject</p>
-            <h2 className="mt-3 text-3xl font-bold text-slate-900 dark:text-white">{subject}</h2>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Time spent in this session: {formatDuration(elapsedSeconds)}</p>
+          <div className="mt-10 rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-violet-700/80 dark:text-violet-200/70">Current Subject</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{subject}</h2>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">Spent: {formatDuration(elapsedSeconds)}</p>
+          </div>
+
+          {/* Global Progress Section */}
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <div className="rounded-2xl bg-amber-50/50 p-3 border border-amber-100/50 dark:bg-amber-900/10 dark:border-amber-900/20">
+               <div className="flex items-center gap-1.5 text-amber-600 mb-1">
+                 <Trophy size={12} />
+                 <span className="text-[9px] font-black uppercase tracking-wider">Mastery</span>
+               </div>
+               <p className="text-lg font-black text-slate-900 dark:text-white leading-none">{stats.conceptsMastered}</p>
+            </div>
+            <div className="rounded-2xl bg-violet-50/50 p-3 border border-violet-100/50 dark:bg-violet-900/10 dark:border-violet-900/20">
+               <div className="flex items-center gap-1.5 text-violet-600 mb-1">
+                 <Clock size={12} />
+                 <span className="text-[9px] font-black uppercase tracking-wider">Total</span>
+               </div>
+               <p className="text-lg font-black text-slate-900 dark:text-white leading-none">{stats.totalHours}h</p>
+            </div>
           </div>
 
           <div className="mt-8 flex items-center justify-between">
             <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Chat History</h3>
-            <span className="material-symbols-outlined text-slate-400">history</span>
+            <History size={20} className="text-slate-400" />
           </div>
 
           <div className="mt-4 space-y-3 overflow-y-auto pr-1">
@@ -339,7 +458,7 @@ export default function SessionPage() {
                     className="absolute right-3 top-3 rounded-full p-1 text-slate-500 transition hover:bg-violet-100 hover:text-violet-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-violet-200"
                     aria-label="Open conversation actions"
                   >
-                    <span className="material-symbols-outlined text-base">more_vert</span>
+                    <MoreVertical size={16} />
                   </button>
                   {menuOpenId === entry.id && (
                     <div className="absolute right-3 top-11 z-10 rounded-xl border border-violet-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-900">
@@ -348,7 +467,7 @@ export default function SessionPage() {
                         onClick={() => handleDeleteConversation(entry.id)}
                         className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 transition hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-500/10"
                       >
-                        <span className="material-symbols-outlined text-base">delete</span>
+                        <Trash2 size={16} />
                         Delete
                       </button>
                     </div>
@@ -391,7 +510,7 @@ export default function SessionPage() {
                   >
                     {message.role === 'assistant' && (
                       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-violet-800 text-white shadow-[0_10px_25px_rgba(76,29,149,0.35)]">
-                        <span className="material-symbols-outlined text-[1.35rem]">psychology</span>
+                        <Brain size={24} />
                       </div>
                     )}
 
@@ -411,8 +530,18 @@ export default function SessionPage() {
                     </div>
 
                     {message.role === 'user' && (
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xl shadow-sm">
-                        <span>U</span>
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full overflow-hidden bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-md border-2 border-white dark:border-slate-800">
+                        {userProfile?.avatarUrl ? (
+                          <img 
+                            src={userProfile.avatarUrl.startsWith('http') ? userProfile.avatarUrl : `${API_BASE_URL}${userProfile.avatarUrl}`} 
+                            alt={userProfile.name} 
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="font-bold text-sm">
+                            {userProfile?.name ? userProfile.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>
@@ -421,7 +550,7 @@ export default function SessionPage() {
                 {isSending && (
                   <div className="flex gap-4">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-violet-800 text-white">
-                      <span className="material-symbols-outlined text-[1.35rem]">psychology</span>
+                      <Brain size={24} />
                     </div>
                     <div className="rounded-[1.4rem] border border-violet-300 bg-violet-100 px-5 py-4 text-slate-700">
                       Thinking through the next guiding step...

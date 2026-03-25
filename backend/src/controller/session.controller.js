@@ -18,9 +18,14 @@ const getUserIdFromRequest = (req) => {
 
 const getStartOfWeek = () => {
     const now = new Date();
+    // Reset to midnight today to prevent partial-day exclusion
+    now.setHours(0, 0, 0, 0);
     const day = now.getDay();
+    // Monday is 1, Sunday is 0. If Sun(0), go back 6 days, else go back (day-1) days.
     const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(now.setDate(diff));
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(diff);
+    return startOfWeek;
 };
 
 const calculateFocusStreak = (sessions) => {
@@ -72,8 +77,12 @@ const buildSubjectMastery = (sessions) => {
     }, {});
 
     sessions.forEach((session) => {
-        if (totals[session.subject] !== undefined) {
-            totals[session.subject] += session.timeSpent;
+        let normalizedSubject = session.subject;
+        // Normalize "Mathematics" to "Math" for display consistency
+        if (normalizedSubject === 'Mathematics') normalizedSubject = 'Math';
+        
+        if (totals[normalizedSubject] !== undefined) {
+            totals[normalizedSubject] += session.timeSpent;
         }
     });
 
@@ -135,11 +144,12 @@ exports.getProgress = async (req, res) => {
         const sessions = await Session.find({ user: userId }).sort({ updatedAt: -1 }).lean();
 
         const totalSessions = sessions.length;
-        const totalSeconds = sessions.reduce((sum, session) => sum + session.timeSpent, 0);
+        const totalSeconds = sessions.reduce((sum, session) => sum + (Number(session.timeSpent) || 0), 0);
         const weeklyHours = sessions
             .filter((session) => new Date(session.updatedAt) >= getStartOfWeek())
-            .reduce((sum, session) => sum + session.timeSpent, 0) / 3600;
-        const conceptsMastered = Math.max(0, Math.round(totalSeconds / 900));
+            .reduce((sum, session) => sum + (Number(session.timeSpent) || 0), 0) / 3600;
+
+        const conceptsMastered = calculateMastery(sessions, totalSeconds);
         const focusStreak = calculateFocusStreak(sessions);
         const weeklyGoalHours = user?.weeklyGoalHours || 17;
 
@@ -149,7 +159,7 @@ exports.getProgress = async (req, res) => {
                 weeklyGoal: `${weeklyHours.toFixed(1)}/${weeklyGoalHours}h`,
                 weeklyGoalHours,
                 conceptsMastered,
-                focusStreak: `${focusStreak} Days`
+                focusStreak: `${focusStreak} ${focusStreak === 1 ? 'Day' : 'Days'}`
             },
             studyHours: buildStudyHours(sessions),
             subjectMastery: buildSubjectMastery(sessions),
@@ -176,7 +186,7 @@ exports.updateWeeklyGoal = async (req, res) => {
             userId,
             { weeklyGoalHours },
             { new: true }
-        ).select('weeklyGoalHours');
+                ).select('weeklyGoalHours');
 
         return res.status(200).json({
             message: 'Weekly goal updated successfully.',
@@ -185,4 +195,40 @@ exports.updateWeeklyGoal = async (req, res) => {
     } catch (error) {
         return res.status(401).json({ message: error.message || 'Unable to update weekly goal.' });
     }
+};
+
+exports.getAllSessions = async (req, res) => {
+    try {
+        const userId = getUserIdFromRequest(req);
+        const sessions = await Session.find({ user: userId }).sort({ updatedAt: -1 }).lean();
+
+        // Calculate total stats
+        const totalSeconds = sessions.reduce((acc, s) => acc + (Number(s.timeSpent) || 0), 0);
+        const totalHours = (totalSeconds / 3600).toFixed(1);
+        const conceptsMastered = calculateMastery(sessions, totalSeconds);
+
+        return res.status(200).json({
+            success: true,
+            count: sessions.length,
+            stats: {
+                totalSessions: sessions.length,
+                totalHours: parseFloat(totalHours),
+                conceptsMastered
+            },
+            sessions
+        });
+    } catch (error) {
+        return res.status(401).json({ message: error.message || 'Unable to load sessions.' });
+    }
+};
+
+const calculateMastery = (sessions, totalSeconds) => {
+    // Optimized Mastery Logic:
+    // 1. Time-based: 1 concept per 10 minutes (600s)
+    // 2. Volume-based booster: 1 concept for every 3 meaningful sessions (>1 min)
+    const timeBasedConcepts = Math.floor(totalSeconds / 600);
+    const meaningfulSessions = sessions.filter(s => s.timeSpent > 60).length;
+    const sessionBonus = Math.floor(meaningfulSessions / 3);
+    
+    return Math.max(sessions.length > 0 ? 1 : 0, timeBasedConcepts + sessionBonus);
 };

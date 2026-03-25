@@ -7,7 +7,16 @@ const normalizeAnswer = (value = '') => value.trim().toLowerCase().replace(/\s+/
 // REGISTER
 exports.registerUser = async (req, res) => {
     try {
-        const { name, email, password, securityQuestions } = req.body;
+        let { name, email, password, securityQuestions } = req.body;
+
+        // If data is sent via FormData, securityQuestions might be a string
+        if (typeof securityQuestions === 'string') {
+            try {
+                securityQuestions = JSON.parse(securityQuestions);
+            } catch (e) {
+                return res.status(400).json({ message: "Invalid security questions format" });
+            }
+        }
 
         // check if user exists
         const existingUser = await User.findOne({ email });
@@ -33,12 +42,16 @@ exports.registerUser = async (req, res) => {
             }))
         );
 
+        // handle avatar if uploaded
+        const avatarUrl = req.file ? `/uploads/avatars/${req.file.filename}` : '';
+
         // create user
         const user = await User.create({
             name,
             email,
             password: hashedPassword,
-            securityQuestions: hashedSecurityQuestions
+            securityQuestions: hashedSecurityQuestions,
+            avatarUrl
         });
 
         res.status(201).json({
@@ -56,6 +69,10 @@ exports.registerUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
 
         const user = await User.findOne({ email });
         if (!user) {
@@ -95,12 +112,8 @@ exports.getCurrentUser = async (req, res) => {
         const authHeader = req.headers.authorization || '';
         const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
-        if (!token) {
-            return res.status(401).json({ message: 'Authorization token is required' });
-        }
-
         const payload = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(payload.id).select('name email');
+        const user = await User.findById(payload.id).select('name email avatarUrl username bio preferredSubjects');
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -110,7 +123,11 @@ exports.getCurrentUser = async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                avatarUrl: user.avatarUrl,
+                username: user.username,
+                bio: user.bio,
+                preferredSubjects: user.preferredSubjects
             }
         });
     } catch (error) {

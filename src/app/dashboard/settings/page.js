@@ -1,20 +1,30 @@
 "use client";
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ThemeToggle } from '../../../components/theme-toggle';
+import ProfileForm from '../../../components/ProfileForm';
+import ProfileAvatar from '../../../components/ProfileAvatar';
+import DangerZone from '../../../components/DangerZone';
+import { 
+  User, 
+  Mail, 
+  Shield, 
+  Key, 
+  LogOut, 
+  Layout, 
+  RotateCcw, 
+  BarChart3, 
+  BookOpen,
+  ChevronRight,
+  Zap,
+  CheckCircle,
+  Calendar
+} from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'http://localhost:5001';
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [passwordSaving, setPasswordSaving] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
   const [passwordForm, setPasswordForm] = useState({
     email: '',
     questions: [],
@@ -23,28 +33,50 @@ export default function SettingsPage() {
     newPassword: '',
     confirmNewPassword: '',
   });
+  const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordStep, setPasswordStep] = useState('email');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [passwordMessage, setPasswordMessage] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [user, setUser] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    if (!token) {
-      router.replace('/login');
-      return;
-    }
-    setLoading(false);
-  }, [router]);
+    const fetchUserData = async () => {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (!token) {
+        router.replace('/login');
+        return;
+      }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setMessage('');
-    setError('');
-  };
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem('token');
+            router.replace('/login');
+            return;
+          }
+          throw new Error('Failed to fetch user data');
+        }
+
+        const data = await response.json();
+        setUser(data.user);
+      } catch (err) {
+        setError('Unable to load profile data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchUserData();
+  }, [router]);
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
@@ -64,42 +96,6 @@ export default function SettingsPage() {
     });
     setPasswordMessage('');
     setPasswordError('');
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setMessage('');
-    setError('');
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/username`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Unable to update username.');
-      }
-
-      setMessage(data.message || 'Username updated successfully.');
-      if (data.user?.name) {
-        localStorage.setItem('userName', data.user.name);
-      }
-      if (data.user?.email) {
-        localStorage.setItem('userEmail', data.user.email);
-      }
-      setFormData((prev) => ({ ...prev, password: '' }));
-    } catch (err) {
-      setError(err.message || 'Unable to update username.');
-    } finally {
-      setSaving(false);
-    }
   };
 
   const handleFetchQuestions = async (e) => {
@@ -229,244 +225,327 @@ export default function SettingsPage() {
     router.push('/login');
   };
 
+  const handleAvatarUpload = (url) => {
+    setUser(prev => ({ ...prev, avatarUrl: url }));
+    setMessage('Profile photo updated successfully!');
+  };
+
+  const calculateProfileCompletion = () => {
+    if (!user) return 0;
+    let score = 0;
+    if (user.name) score += 20;
+    if (user.email) score += 20;
+    if (user.avatarUrl) score += 20;
+    if (user.bio) score += 20;
+    if (user.preferredSubjects && user.preferredSubjects.length > 0) score += 20;
+    return score;
+  };
+
+  const profileScore = calculateProfileCompletion();
+
   if (loading) {
     return (
       <main className="min-h-screen grid place-items-center bg-slate-100 dark:bg-slate-950">
-        <p className="text-lg text-slate-700 dark:text-slate-200">Loading settings...</p>
+        <p className="text-lg text-slate-700 dark:text-slate-200 font-medium animate-pulse">Loading settings...</p>
       </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-white">
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-slate-50 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-white transition-all">
       <div className="flex min-h-screen">
-        <aside className="w-72 border-r border-slate-200 bg-white px-6 py-6 dark:border-slate-800 dark:bg-slate-950">
-          <div className="mb-10 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-700 text-sm font-bold text-white dark:bg-violet-800">
+        {/* Fixed Width Sidebar (w-64) */}
+        <aside className="fixed left-0 top-0 bottom-0 w-64 border-r border-slate-200 bg-white/80 backdrop-blur-md px-6 py-6 dark:border-slate-800 dark:bg-slate-950/80 z-20 hidden lg:flex flex-col">
+          <button 
+             onClick={() => router.push('/dashboard/overview')}
+             className="mb-10 flex items-center gap-3 hover:opacity-80 transition cursor-pointer text-left"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-700 text-sm font-bold text-white shadow-lg shadow-violet-200 dark:bg-violet-800">
               AI
             </div>
             <div>
-              <p className="font-bold tracking-wide">Socratic</p>
-              <p className="text-xs uppercase tracking-[0.25em] text-slate-400">AI Tutor</p>
+              <p className="font-bold tracking-wide text-sm">Socratic</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">AI Tutor</p>
             </div>
-          </div>
+          </button>
 
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.25em] text-slate-400">Main Menu</p>
-          <nav className="space-y-2">
+          <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 opacity-70">Main Menu</p>
+          <nav className="space-y-1.5 flex-1">
             <button
               onClick={() => router.push('/dashboard/overview')}
-              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100/80 dark:text-slate-400 dark:hover:bg-slate-800/40"
             >
-              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">dashboard</span>
-              <span className="font-medium">Tutor Dashboard</span>
+              <Layout size={18} />
+              <span className="font-medium text-sm">Dashboard</span>
             </button>
             <button
               onClick={() => router.push('/dashboard')}
-              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100/80 dark:text-slate-400 dark:hover:bg-slate-800/40"
             >
-              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">chat</span>
-              <span className="font-medium">My Sessions</span>
+              <RotateCcw size={18} />
+              <span className="font-medium text-sm">Sessions</span>
             </button>
             <button
               onClick={() => router.push('/dashboard/progress')}
-              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/40"
+              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100/80 dark:text-slate-400 dark:hover:bg-slate-800/40"
             >
-              <span className="material-symbols-outlined text-violet-700/80 dark:text-violet-300/80">monitoring</span>
-              <span className="font-medium">Learning Progress</span>
+              <BarChart3 size={18} />
+              <span className="font-medium text-sm">Analytics</span>
             </button>
-            <button className="flex w-full items-center gap-3 rounded-2xl bg-violet-100 px-4 py-3 text-violet-900 dark:bg-violet-900/30 dark:text-violet-100">
-              <span className="material-symbols-outlined text-violet-700 dark:text-violet-300">settings</span>
-              <span className="font-medium">User Settings</span>
+            <button
+              onClick={() => router.push('/dashboard/settings')}
+              className="flex w-full items-center gap-3 rounded-2xl bg-violet-600 px-4 py-3 text-white shadow-md shadow-violet-100 dark:shadow-none"
+            >
+              <BookOpen size={18} />
+              <span className="font-semibold text-sm">Profile</span>
             </button>
+            <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800">
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-red-500 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+              >
+                <LogOut size={18} />
+                <span className="font-medium text-sm">Logout</span>
+              </button>
+            </div>
           </nav>
         </aside>
 
-        <main className="flex-1 p-6 md:p-10">
-          <div className="max-w-4xl">
-            <div className="flex items-center justify-between mb-8">
+        {/* Main Content Area */}
+        <main className="flex-1 lg:ml-64 p-4 md:p-8">
+          <div className="max-w-[1400px] mx-auto space-y-8">
+            {/* Header Section */}
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2">
               <div>
-                <p className="text-sm uppercase tracking-[0.25em] text-violet-700 dark:text-violet-300">Account</p>
-                <h1 className="text-4xl font-bold mt-2">Settings</h1>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 px-2 py-0.5 rounded-md w-fit mb-2">
+                  Settings
+                </p>
+                <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                  User Profile
+                </h1>
               </div>
               <div className="flex items-center gap-3">
                 <ThemeToggle />
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-violet-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-          <h2 className="text-2xl font-bold mb-2">Change Username</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-8">
-            Enter your correct email and password. Your username will only be changed if both credentials are valid.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <input
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="New username"
-              className="w-full rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              required
-            />
-            <input
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Email"
-              type="email"
-              className="w-full rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              required
-            />
-            <input
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Password"
-              type="password"
-              className="w-full rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              required
-            />
-
-            {message && <p className="text-green-600 dark:text-green-400">{message}</p>}
-            {error && <p className="text-red-600 dark:text-red-400">{error}</p>}
-
-            <div className="flex flex-wrap gap-4 pt-2">
-              <button
-                type="submit"
-                disabled={saving}
-                className="rounded-xl bg-violet-700 px-5 py-3 font-semibold text-white hover:bg-violet-800 disabled:opacity-60 dark:bg-violet-800 dark:hover:bg-violet-900"
-              >
-                {saving ? 'Updating...' : 'Update Username'}
-              </button>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="rounded-xl bg-red-100 px-5 py-3 font-semibold text-red-700 hover:bg-red-200 dark:bg-red-600/20 dark:text-red-300 dark:hover:bg-red-600/30"
-              >
-                Logout
-              </button>
-            </div>
-          </form>
-        </div>
-
-            <div className="mt-8 rounded-3xl border border-violet-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <h2 className="text-2xl font-bold mb-2">Change Password</h2>
-              <p className="text-slate-600 dark:text-slate-400 mb-8">
-                Verify your account with your saved security questions before setting a new password.
-              </p>
-
-          {passwordStep === 'email' && (
-            <form onSubmit={handleFetchQuestions} className="space-y-5">
-              <input
-                name="email"
-                value={passwordForm.email}
-                onChange={handlePasswordChange}
-                placeholder="Email"
-                type="email"
-                className="w-full rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                required
-              />
-
-              {passwordMessage && <p className="text-green-600 dark:text-green-400">{passwordMessage}</p>}
-              {passwordError && <p className="text-red-600 dark:text-red-400">{passwordError}</p>}
-
-              <button
-                type="submit"
-                disabled={passwordSaving}
-                className="rounded-xl bg-violet-700 px-5 py-3 font-semibold text-white hover:bg-violet-800 disabled:opacity-60 dark:bg-violet-800 dark:hover:bg-violet-700"
-              >
-                {passwordSaving ? 'Loading...' : 'Fetch Security Questions'}
-              </button>
-            </form>
-          )}
-
-          {passwordStep === 'answers' && (
-            <form onSubmit={handleVerifyQuestions} className="space-y-5">
-              {passwordForm.questions.map((item, index) => (
-                <div key={`${item.question}-${item.index}`} className="space-y-2">
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">{item.question}</label>
-                  <input
-                    value={passwordForm.answers[index] || ''}
-                    onChange={(e) => handleSecurityAnswerChange(index, e.target.value)}
-                    placeholder="Your answer"
-                    className="w-full rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                    required
-                  />
+                <div className="h-10 w-10 rounded-full overflow-hidden bg-violet-600 flex items-center justify-center text-white font-bold shadow-lg shadow-violet-200 dark:shadow-none border-2 border-white dark:border-slate-800">
+                  {user?.avatarUrl ? (
+                    <img 
+                      src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `${API_BASE_URL}${user.avatarUrl}`} 
+                      alt={user.name} 
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    user?.name?.[0] || 'U'
+                  )}
                 </div>
-              ))}
-
-              {passwordMessage && <p className="text-green-600 dark:text-green-400">{passwordMessage}</p>}
-              {passwordError && <p className="text-red-600 dark:text-red-400">{passwordError}</p>}
-
-              <div className="flex flex-wrap gap-4">
-                <button
-                  type="submit"
-                  disabled={passwordSaving}
-                  className="rounded-xl bg-violet-700 px-5 py-3 font-semibold text-white hover:bg-violet-800 disabled:opacity-60 dark:bg-violet-800 dark:hover:bg-violet-700"
-                >
-                  {passwordSaving ? 'Verifying...' : 'Verify Answers'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPasswordStep('email');
-                    setPasswordError('');
-                    setPasswordMessage('');
-                  }}
-                  className="rounded-xl border border-violet-300 bg-white px-5 py-3 font-semibold text-violet-800 hover:bg-violet-50 dark:border-slate-700 dark:bg-slate-800 dark:text-violet-200 dark:hover:bg-slate-700"
-                >
-                  Back
-                </button>
               </div>
-            </form>
-          )}
+            </header>
 
-          {passwordStep === 'reset' && (
-            <form onSubmit={handleResetPassword} className="space-y-5">
-              <input
-                name="newPassword"
-                value={passwordForm.newPassword}
-                onChange={handlePasswordChange}
-                placeholder="New password"
-                type="password"
-                className="w-full rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                required
-              />
-              <input
-                name="confirmNewPassword"
-                value={passwordForm.confirmNewPassword}
-                onChange={handlePasswordChange}
-                placeholder="Confirm new password"
-                type="password"
-                className="w-full rounded-xl border border-violet-200 bg-violet-50/60 px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                required
-              />
+            {/* Grid Layout (12 Columns) */}
+            <div className="grid grid-cols-12 gap-6">
+              
+              {/* LEFT COLUMN (8 cols) */}
+              <div className="col-span-12 lg:col-span-8 space-y-6">
+                
+                {/* Profile Form Card */}
+                <section className="rounded-3xl border border-white bg-white/60 p-8 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="h-10 w-10 rounded-xl bg-violet-50 flex items-center justify-center text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
+                       <User size={20} />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Identity Details</h2>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs">Manage how others see you on the platform.</p>
+                    </div>
+                  </div>
 
-              {passwordMessage && <p className="text-green-600 dark:text-green-400">{passwordMessage}</p>}
-              {passwordError && <p className="text-red-600 dark:text-red-400">{passwordError}</p>}
+                  <ProfileForm 
+                    user={user} 
+                    onUpdate={(updatedUser) => {
+                      setUser(updatedUser);
+                      setMessage('Profile updated successfully!');
+                    }} 
+                  />
+                </section>
 
-              <div className="flex flex-wrap gap-4">
-                <button
-                  type="submit"
-                  disabled={passwordSaving}
-                  className="rounded-xl bg-violet-700 px-5 py-3 font-semibold text-white hover:bg-violet-800 disabled:opacity-60 dark:bg-violet-800 dark:hover:bg-violet-700"
-                >
-                  {passwordSaving ? 'Updating...' : 'Update Password'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPasswordStep('answers');
-                    setPasswordError('');
-                    setPasswordMessage('');
-                  }}
-                  className="rounded-xl border border-violet-300 bg-white px-5 py-3 font-semibold text-violet-800 hover:bg-violet-50 dark:border-slate-700 dark:bg-slate-800 dark:text-violet-200 dark:hover:bg-slate-700"
-                >
-                  Back
-                </button>
+                {/* Password Management Card */}
+                <section className="rounded-3xl border border-white bg-white/60 p-8 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60">
+                   <div className="flex items-center gap-3 mb-8">
+                    <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+                       <Shield size={20} />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Change Password</h2>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs">Update your password using security questions.</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    {passwordStep === 'email' && (
+                      <form onSubmit={handleFetchQuestions} className="space-y-4">
+                        <div className="relative group">
+                           <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-600 transition-colors" />
+                           <input
+                            name="email"
+                            value={passwordForm.email}
+                            onChange={handlePasswordChange}
+                            placeholder="Current account email"
+                            type="email"
+                            className="w-full rounded-2xl border border-slate-100 bg-slate-50/50 pl-12 pr-4 py-4 text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-400/50 dark:border-slate-800 dark:bg-slate-950/40 dark:text-white transition-all shadow-sm group-hover:bg-white dark:group-hover:bg-slate-900"
+                            required
+                          />
+                        </div>
+
+                        {passwordMessage && <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-2 rounded-xl">{passwordMessage}</p>}
+                        {passwordError && <p className="text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-xl">{passwordError}</p>}
+
+                        <button
+                          type="submit"
+                          disabled={passwordSaving}
+                          className="w-full flex items-center justify-center gap-2 rounded-2xl bg-violet-700 py-4 font-bold text-white transition-all hover:bg-violet-800 hover:shadow-lg hover:shadow-violet-200 disabled:opacity-60 dark:bg-violet-800 dark:hover:bg-violet-700 dark:shadow-none shadow-md shadow-violet-100"
+                        >
+                          {passwordSaving ? 'Synchronizing...' : (
+                            <>
+                              <Key size={20} />
+                              Fetch Email ID
+                            </>
+                          )}
+                        </button>
+                      </form>
+                    )}
+
+                    {passwordStep === 'answers' && (
+                      <form onSubmit={handleVerifyQuestions} className="space-y-5">
+                        {passwordForm.questions.map((item, index) => (
+                          <div key={`${item.question}-${item.index}`} className="space-y-2">
+                            <label className="block text-xs font-black uppercase tracking-widest text-slate-400 ml-1">{item.question}</label>
+                            <input
+                              value={passwordForm.answers[index] || ''}
+                              onChange={(e) => handleSecurityAnswerChange(index, e.target.value)}
+                              placeholder="Your secret answer"
+                              className="w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-4 text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-400/50 dark:border-slate-800 dark:bg-slate-950/40 dark:text-white transition-all shadow-sm"
+                              required
+                            />
+                          </div>
+                        ))}
+
+                        {passwordMessage && <p className="text-sm font-bold text-emerald-600">{passwordMessage}</p>}
+                        {passwordError && <p className="text-sm font-bold text-red-600">{passwordError}</p>}
+
+                        <div className="flex gap-4">
+                          <button
+                            type="submit"
+                            disabled={passwordSaving}
+                            className="flex-1 rounded-2xl bg-violet-700 py-4 font-bold text-white transition hover:bg-violet-800 disabled:opacity-60"
+                          >
+                            {passwordSaving ? 'Verifying...' : 'Validate Answers'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPasswordStep('email')}
+                            className="px-6 rounded-2xl border border-slate-200 bg-white font-bold text-slate-600 hover:bg-slate-50 transition"
+                          >
+                            Back
+                          </button>
+                        </div>
+                      </form>
+                    )}
+
+                    {passwordStep === 'reset' && (
+                      <form onSubmit={handleResetPassword} className="space-y-4">
+                        <input
+                          name="newPassword"
+                          value={passwordForm.newPassword}
+                          onChange={handlePasswordChange}
+                          placeholder="Create new password"
+                          type="password"
+                          className="w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-4 transition-all focus:ring-2 focus:ring-violet-400/50"
+                          required
+                        />
+                        <input
+                          name="confirmNewPassword"
+                          value={passwordForm.confirmNewPassword}
+                          onChange={handlePasswordChange}
+                          placeholder="Confirm new password"
+                          type="password"
+                          className="w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-4 transition-all focus:ring-2 focus:ring-violet-400/50"
+                          required
+                        />
+                        <button
+                          type="submit"
+                          disabled={passwordSaving}
+                          className="w-full rounded-2xl bg-emerald-600 py-4 font-bold text-white transition hover:bg-emerald-700 shadow-md shadow-emerald-100"
+                        >
+                          {passwordSaving ? 'Updating...' : 'Set Final Password'}
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                </section>
+                
+                {/* Danger Zone Card */}
+                <DangerZone />
               </div>
-            </form>
-          )}
+
+              {/* RIGHT COLUMN (4 cols) */}
+              <div className="col-span-12 lg:col-span-4 space-y-6">
+                
+                {/* Identity Sidebar Card */}
+                <section className="rounded-3xl border border-white bg-white/60 p-8 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60 text-center">
+                  <div className="mb-6 flex justify-center">
+                    <ProfileAvatar user={user} onUploadSuccess={handleAvatarUpload} />
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{user?.name}</h3>
+                  <p className="text-slate-500 text-sm mt-1">{user?.email}</p>
+                  
+                  <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-4">
+                     <div className="flex items-center justify-between px-2">
+                        <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+                           <Zap size={14} className="text-violet-600" />
+                           Account Status
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Premium</span>
+                     </div>
+                     <div className="flex items-center justify-between px-2">
+                        <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+                           <Calendar size={14} className="text-violet-600" />
+                           Joined
+                        </div>
+                        <span className="text-[10px] font-black tracking-tight text-slate-600">March 2026</span>
+                     </div>
+                  </div>
+                </section>
+
+                 {/* Profile Completion Card */}
+                 <section className="rounded-3xl border border-white bg-violet-600 p-6 text-white shadow-xl shadow-violet-200 dark:shadow-none">
+                   <div className="flex items-center gap-3 mb-4">
+                     <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
+                        <CheckCircle size={16} />
+                     </div>
+                     <h4 className="font-black text-sm tracking-tight uppercase tracking-[0.1em]">Profile Score</h4>
+                   </div>
+                   <div className="space-y-4">
+                     <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
+                        <div className="h-full bg-white transition-all duration-1000 ease-out rounded-full shadow-sm shadow-white/50" style={{ width: `${profileScore}%` }}></div>
+                     </div>
+                     <p className="text-xs font-medium text-white/80 leading-relaxed">
+                       Your profile is {profileScore}% complete. {profileScore < 100 ? "Complete the remaining sections for better AI personalization." : "Excellent! Your profile is fully optimized for learning."}
+                     </p>
+                     <button 
+                       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                       className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 hover:gap-2 transition-all mt-2"
+                     >
+                       {profileScore < 100 ? "Complete Now" : "Manage Profile"} <ChevronRight size={12} />
+                     </button>
+                   </div>
+                 </section>
+
+                {/* Privacy Badge */}
+                <div className="p-4 rounded-2xl bg-white/40 border border-white flex items-center gap-3 text-slate-500 dark:border-slate-800 dark:bg-slate-900/40">
+                   <Shield size={16} className="text-emerald-500" />
+                   <p className="text-[10px] font-bold leading-tight uppercase tracking-tight">Your data is encrypted and protected by enterprise security standards.</p>
+                </div>
+              </div>
+
             </div>
           </div>
         </main>

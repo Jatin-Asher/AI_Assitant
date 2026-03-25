@@ -43,6 +43,26 @@ const userSchema = new mongoose.Schema({
         default: 17,
         min: 1,
         max: 100
+    },
+    avatarUrl: {
+        type: String,
+        default: ''
+    },
+    username: {
+        type: String,
+        unique: true,
+        sparse: true,
+        trim: true
+    },
+    bio: {
+        type: String,
+        maxlength: 200,
+        default: ''
+    },
+    preferredSubjects: {
+        type: [String],
+        enum: ['Physics', 'Chemistry', 'Math', 'Biology'],
+        default: []
     }
 }, { timestamps: true });
 

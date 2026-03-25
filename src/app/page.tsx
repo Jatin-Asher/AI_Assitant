@@ -2,282 +2,296 @@
 import React from 'react';
 import Link from 'next/link';
 import { ThemeToggle } from '../components/theme-toggle';
+import { 
+  BrainCircuit, 
+  Sparkles, 
+  ChevronRight, 
+  User, 
+  ShieldCheck, 
+  BookOpen, 
+  Target, 
+  Zap, 
+  ArrowRight,
+  GraduationCap,
+  History,
+  Lock,
+  Globe,
+  Monitor,
+  CheckCircle
+} from 'lucide-react';
 
 export default function LandingPage() {
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-all selection:bg-violet-100 selection:text-violet-900">
       {/* Top Navigation Bar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm dark:shadow-none">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <span className="text-xl font-bold text-purple-600 dark:text-purple-400 font-headline tracking-tight">Socratic AI</span>
-
+      <nav className="fixed top-0 w-full z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-white/20 dark:border-slate-800/50">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-2 group cursor-pointer">
+            <div className="h-10 w-10 rounded-xl bg-violet-600 flex items-center justify-center text-white shadow-lg shadow-violet-200 dark:shadow-none group-hover:scale-110 transition-transform">
+               <BrainCircuit size={22} />
+            </div>
+            <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter">Socratic<span className="text-violet-600">AI</span></span>
           </div>
+          
+          <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-500 dark:text-slate-400">
+             <a href="#features" className="hover:text-violet-600 transition-colors">Features</a>
+             <a href="#method" className="hover:text-violet-600 transition-colors">The Method</a>
+             <a href="#pricing" className="hover:text-violet-600 transition-colors">Pricing</a>
+          </div>
+
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <div className="h-8 w-8 rounded-full bg-primary-fixed dark:bg-purple-900/40 flex items-center justify-center overflow-hidden border border-outline-variant/30">
-              <img alt="User avatar" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5VfV-ZRKHSbadao7w1xGpRfYq_TTanX3C521RfoiRZnKwTQX1lH-qfLZSWT1x2kvvBppF5iPtnmF16jXmxNQ-Kr5mo01ORGymeefn1YJsfvjNbAKuPzNuHX9TPA1uMlovvdJau51BJfJzkpaR9fZXBKWcBJhSthqE4CfJyL88PJ12S5rU8ORxb_KB27kNKOou6Rnwe5KZ5mNKzeoQz7TvoiADOfFc0f0T4NmHp10k8GFKYBtGEETB1FGgjqUoYtiTR-0E4b5Ojc34" />
-            </div>
+            <Link href="/login" className="hidden sm:block text-sm font-black text-slate-700 dark:text-slate-300 hover:text-violet-600 transition-colors">
+               Log In
+            </Link>
+            <Link href="/login?mode=register" className="px-6 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 font-black text-xs uppercase tracking-widest hover:scale-105 transition active:scale-95 shadow-xl shadow-slate-200 dark:shadow-none">
+               GET STARTED
+            </Link>
           </div>
         </div>
       </nav>
 
-      <main className="pt-0">
+      <main>
         {/* Hero Section */}
-        <section className="relative min-h-screen lg:min-h-[921px] flex items-center overflow-hidden px-4 md:px-6 py-24 lg:py-0">
-          <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="z-10">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary-container dark:bg-purple-900/60 text-on-secondary-container dark:text-purple-200 mb-6 text-sm font-semibold tracking-wide">
-                <span className="material-symbols-outlined text-sm" data-icon="auto_awesome">auto_awesome</span>
-                EDUCATIONAL EXCELLENCE
+        <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+            <div className="relative z-10 space-y-8 animate-in fade-in slide-in-from-left duration-1000">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-800 text-[10px] font-black uppercase tracking-[0.2em]">
+                <Sparkles size={12} className="animate-pulse" />
+                Next-Gen Socratic Learning
               </div>
-              <h1 className="text-4xl md:text-6xl font-extrabold text-on-surface dark:text-gray-100 leading-[1.1] mb-6 tracking-tight">
-                Learn by Thinking,
-                Not by Copying Answers
+              <h1 className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white leading-[0.95] tracking-tighter">
+                Learn by <span className="text-violet-600 italic">Thinking</span>,
+                Not Copying.
               </h1>
-              <p className="text-xl text-on-surface-variant dark:text-gray-300 mb-10 max-w-lg leading-relaxed font-body">
+              <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 max-w-lg leading-relaxed font-semibold">
                 An AI tutor that guides you step-by-step using questions, hints, and reasoning — instead of giving direct answers.
               </p>
-              <div className="flex flex-col sm:flex-row flex-wrap gap-4">
-                <Link href="/login?mode=register" className="px-6 md:px-8 py-3 md:py-4 rounded-DEFAULT bg-gradient-to-br from-primary to-primary-container text-on-primary font-semibold text-base md:text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-95 w-full sm:w-auto text-center inline-block">
-                  Get Started
-                </Link>
-
-                <Link href="/login" className="px-6 md:px-8 py-3 md:py-4 rounded-DEFAULT bg-surface-container-high dark:bg-gray-800 text-on-surface dark:text-gray-100 font-semibold text-base md:text-lg hover:bg-surface-container-highest dark:hover:bg-gray-700 transition-all active:scale-95 w-full sm:w-auto text-center inline-block">
-                  Log In
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Link href="/login?mode=register" className="px-10 py-5 rounded-2xl bg-violet-600 text-white font-black text-lg shadow-2xl shadow-violet-200 hover:bg-violet-700 hover:-translate-y-1 transition active:translate-y-0 text-center flex items-center justify-center gap-2 group">
+                   Get Started Free
+                   <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
-              <p className="text-sm text-primary font-medium mt-4">
-                <span role="img" aria-label="Not a chatbot">🚫</span> Not a chatbot. A guided learning system.
-              </p>
+              <div className="flex items-center gap-6 pt-4">
+                 <div className="flex -space-x-3">
+                   {[1,2,3,4].map(i => (
+                     <div key={i} className="h-10 w-10 rounded-full border-2 border-white dark:border-slate-950 bg-slate-200 overflow-hidden">
+                        <img src={`https://i.pravatar.cc/100?u=${i}`} alt="user" />
+                     </div>
+                   ))}
+                 </div>
+                 <p className="text-xs font-bold text-slate-400">
+                    <span className="text-slate-900 dark:text-white font-black">2,400+</span> students studying today
+                 </p>
+              </div>
             </div>
 
-            {/* Bento Style Visual */}
-            <div className="relative flex flex-col lg:grid lg:grid-cols-12 lg:grid-rows-12 gap-4 lg:h-[600px] w-full mt-12 lg:mt-0">
-              <div className="lg:col-span-8 lg:row-span-7 bg-surface-container-lowest dark:bg-black rounded-lg overflow-hidden shadow-sm border border-outline-variant/10 relative group min-h-[300px] lg:min-h-0">
-                <img alt="Student learning" className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbVHF7B0VizTPDS97UGg73sjyU1i-EWA10SWJg5P6UwUuU3sjdNK7H952jelErD9TqQdwI6A0vzMVA9RIIksrEKo7ox2r3hTpaSJMzXYxqdjCfMUZ888l-JxscIE2ioXf0FfuY3oA60tkHx49Kmr5KkMkoPoihxFYFoA-lb7nW0VuG-OhZIZ4gRTX5m0ewtGoAB7lhnaS3ffC8MMCrgjV5lv1w8S3ljT1jqstN0Q7TRebBp6kdPS1mvKiCnf_7fFwgjCP4Scw8ImZ1" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
-                  <p className="text-white font-headline font-bold text-xl">Interactive Dialogue</p>
-                </div>
-              </div>
-              <div className="lg:col-span-4 lg:row-span-4 bg-primary text-on-primary rounded-lg p-6 flex flex-col justify-between min-h-[200px] lg:min-h-0">
-                <span className="material-symbols-outlined text-4xl" data-icon="psychology">psychology</span>
-                <div className="mt-auto lg:mt-0">
-                  <div className="text-3xl font-bold">98%</div>
-                  <div className="text-sm opacity-80">Retainment Rate</div>
-                </div>
-              </div>
-              <div className="lg:col-span-4 lg:row-span-5 bg-secondary-container dark:bg-purple-900/60 rounded-lg p-6 flex items-center justify-center min-h-[200px] lg:min-h-0">
-                <span className="material-symbols-outlined text-6xl text-on-secondary-container dark:text-purple-200" data-icon="functions">functions</span>
-              </div>
-              <div className="lg:col-span-7 lg:row-span-5 bg-surface-container-low dark:bg-gray-900 rounded-lg p-6 flex flex-col gap-3 border border-outline-variant/20 min-h-[200px] lg:min-h-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white dark:bg-purple-900 flex items-center justify-center text-primary dark:text-purple-300">
-                    <span className="material-symbols-outlined" data-icon="terminal">terminal</span>
+            {/* Premium Bento Visual */}
+            <div className="relative grid grid-cols-12 grid-rows-12 gap-4 h-[600px] animate-in fade-in slide-in-from-right duration-1000 px-4 md:px-0">
+               {/* Main Visual */}
+               <div className="col-span-12 row-span-7 rounded-[2.5rem] bg-slate-200 overflow-hidden shadow-2xl relative group">
+                  <img alt="Student learning" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1000" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-8 left-8 right-8">
+                     <p className="text-white text-2xl font-black tracking-tight leading-tight">Master Complex Systems through Inquiry.</p>
+                     <div className="mt-4 flex items-center gap-4">
+                        <div className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest border border-white/20">Active Learning</div>
+                        <div className="px-3 py-1 rounded-full bg-violet-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-violet-900/50">Quantum Physics</div>
+                     </div>
                   </div>
-                  <span className="font-semibold text-on-surface">Critical Thinking</span>
-                </div>
-                <p className="text-sm text-on-surface-variant">Master logic and problem solving through structured guidance.</p>
-                <div className="mt-auto h-2 w-full bg-white/50 dark:bg-purple-900/50 rounded-full overflow-hidden">
-                  <div className="h-full w-2/3 bg-primary rounded-full"></div>
-                </div>
-              </div>
-              <div className="lg:col-span-5 lg:row-span-3 bg-tertiary-fixed dark:bg-purple-950/50 rounded-lg flex items-center justify-center min-h-[150px] lg:min-h-0">
-                <span className="material-symbols-outlined text-3xl text-on-tertiary-fixed dark:text-purple-300" data-icon="history_edu">history_edu</span>
-              </div>
-            </div>
-          </div>
+               </div>
 
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-3xl -z-10"></div>
-          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-3xl -z-10"></div>
-        </section>
-
-        {/* Socratic Interface Preview */}
-        <section className="py-16 md:py-24 px-4 md:px-6 bg-surface-container-low dark:bg-gray-900">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-10 md:mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-on-surface dark:text-gray-100 mb-4">The Guided Experience</h2>
-              <p className="text-base md:text-lg text-on-surface-variant dark:text-gray-300 max-w-2xl mx-auto">Experience a learning environment designed for deep focus and academic rigor.</p>
-            </div>
-            <div className="glass-panel p-4 md:p-8 rounded-lg shadow-xl border border-outline-variant/20 max-w-4xl mx-auto">
-              {/* Tutor Bubble */}
-              <div className="flex gap-3 md:gap-4 mb-6 md:mb-8">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-fixed dark:bg-purple-900/40 flex-shrink-0 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary text-sm md:text-base" data-icon="psychology">psychology</span>
-                </div>
-                <div className="bg-surface-container-lowest dark:bg-black p-4 md:p-6 rounded-lg rounded-tl-none border-l-4 border-primary shadow-sm max-w-xl">
-                  <p className="text-on-surface dark:text-gray-100 leading-relaxed text-base md:text-lg font-body">
-                    That's an interesting observation about the Pythagorean theorem. Instead of just looking at the formula, what happens to the area of the squares if we double the length of the sides?
-                  </p>
-                </div>
-              </div>
-
-              {/* Student Bubble */}
-              <div className="flex flex-row-reverse gap-3 md:gap-4 mb-6 md:mb-8">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-secondary-container dark:bg-purple-900/60 flex-shrink-0 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-on-secondary-container dark:text-gray-100 text-sm md:text-base" data-icon="person" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
-                </div>
-                <div className="bg-secondary-container dark:bg-purple-900/60 p-4 md:p-6 rounded-lg rounded-tr-none shadow-sm max-w-xl">
-                  <p className="text-on-secondary-container dark:text-gray-100 leading-relaxed font-medium font-body text-base md:text-lg">
-                    I think the area would quadruple, because each side is squared in the area calculation?
-                  </p>
-                </div>
-              </div>
-
-              {/* Thinking Indicator */}
-              <div className="flex gap-3 md:gap-4 opacity-60">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-surface-container-highest flex-shrink-0 flex items-center justify-center">
-                  <span className="material-symbols-outlined animate-pulse text-sm md:text-base" data-icon="auto_awesome">auto_awesome</span>
-                </div>
-                <div className="flex gap-2 items-center py-2 md:py-4">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-bounce"></div>
-                  <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-.3s]"></div>
-                  <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-.5s]"></div>
-                </div>
-              </div>
-
-              {/* Input Area */}
-              <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-outline-variant/30">
-                <div className="relative group">
-                  <input className="font-body w-full bg-surface-container-low dark:bg-gray-800 dark:text-gray-100 border-none border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-DEFAULT pl-4 md:pl-6 pr-14 md:pr-16 py-3 md:py-4 text-base md:text-lg transition-all placeholder:text-outline" placeholder="Share your thoughts..." type="text" />
-                  <button className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-on-primary flex items-center justify-center active:scale-90 transition-transform">
-                    <span className="material-symbols-outlined text-sm md:text-base" data-icon="send">send</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Bento Grid */}
-        <section className="py-24 px-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="md:col-span-2 bg-surface-container-lowest dark:bg-black p-10 rounded-lg border border-outline-variant/10 group">
-                <div className="flex justify-between items-start mb-12">
-                  <div>
-                    <h3 className="text-3xl font-bold mb-4 font-headline">Master Every Discipline</h3>
-                    <p className="text-on-surface-variant dark:text-gray-300 max-w-md font-body">From Quantum Physics to Renaissance Art, our AI is trained across the entire spectrum of human knowledge.</p>
+               {/* Stat Card */}
+               <div className="col-span-5 row-span-5 rounded-[2.5rem] bg-violet-600 p-8 text-white shadow-2xl shadow-violet-200 dark:shadow-none flex flex-col justify-between group overflow-hidden relative">
+                  <Zap size={40} className="text-white/20 absolute -top-2 -right-2 group-hover:scale-150 transition-transform duration-700" />
+                  <Zap size={28} className="relative z-10" />
+                  <div className="relative z-10">
+                    <div className="text-4xl font-black leading-none mb-1">98%</div>
+                    <div className="text-[10px] font-black uppercase tracking-widest opacity-80">Retainment Rate</div>
                   </div>
-                  <span className="material-symbols-outlined text-5xl text-primary/20 group-hover:text-primary/60 transition-colors" data-icon="menu_book">menu_book</span>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <span className="px-4 py-2 rounded-full bg-surface-container-high dark:bg-gray-800 text-sm font-medium font-body">Mathematics</span>
-                  <span className="px-4 py-2 rounded-full bg-surface-container-high dark:bg-gray-800 text-sm font-medium font-body">Philosophy</span>
-                  <span className="px-4 py-2 rounded-full bg-surface-container-high dark:bg-gray-800 text-sm font-medium font-body">Computer Science</span>
-                  <span className="px-4 py-2 rounded-full bg-surface-container-high dark:bg-gray-800 text-sm font-medium font-body">History</span>
-                  <span className="px-4 py-2 rounded-full bg-surface-container-high dark:bg-gray-800 text-sm font-medium font-body">Literature</span>
-                  <span className="px-4 py-2 rounded-full bg-surface-container-high dark:bg-gray-800 text-sm font-medium font-body">Economics</span>
-                </div>
-              </div>
-              <div className="bg-primary p-10 rounded-lg text-on-primary flex flex-col justify-between">
-                <div>
-                  <span className="material-symbols-outlined text-4xl mb-6" data-icon="bolt">bolt</span>
-                  <h3 className="text-2xl font-bold mb-4 font-headline">Accelerated Growth</h3>
-                  <p className="opacity-80 font-body">Our method is proven to increase concept mastery by 3x compared to traditional video-based learning.</p>
-                </div>
-                <a className="inline-flex items-center gap-2 font-bold group font-body" href="#">
-                  Read the Study
-                  <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
-                </a>
-              </div>
-              <div className="bg-secondary-container dark:bg-purple-900/60 p-10 rounded-lg text-on-secondary-container dark:text-purple-200">
-                <span className="material-symbols-outlined text-4xl mb-6" data-icon="verified_user">verified_user</span>
-                <h3 className="text-2xl font-bold mb-4 font-headline">Academic Integrity</h3>
-                <p className="font-body">We focus on the journey of understanding. Our AI will never provide a direct answer, ensuring you truly learn the material.</p>
-              </div>
-              <div className="md:col-span-2 bg-surface-container-high dark:bg-gray-800 p-10 rounded-lg relative overflow-hidden group">
-                <div className="relative z-10 flex flex-col h-full">
-                  <h3 className="text-3xl font-bold mb-4 font-headline">Track Your Cognitive Journey</h3>
-                  <p className="text-on-surface-variant dark:text-gray-300 max-w-sm mb-8 font-body">Visualize your progress through knowledge trees and conceptual maps.</p>
-                  <div className="mt-auto flex gap-4">
-                    <div className="w-16 h-16 rounded-full border-4 border-white/30 border-t-primary animate-spin"></div>
-                    <div>
-                      <div className="text-xl font-bold font-headline">Analysis in Progress</div>
-                      <div className="text-sm opacity-60 font-body">Building your personalized path</div>
+               </div>
+
+               {/* Interaction Card */}
+               <div className="col-span-7 row-span-5 rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 border border-slate-100 dark:border-slate-800 shadow-xl flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center text-violet-600">
+                       <Sparkles size={20} />
                     </div>
+                    <span className="font-bold text-sm text-slate-900 dark:text-white">Conceptual Analysis</span>
                   </div>
-                </div>
-                <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 group-hover:opacity-20 transition-opacity">
-                  <img alt="Data visualization" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNpuPsffYZ_zq7YCFoxgqt0d9fTqVTc5v_MzE1IWUz7LcEkmfqPM-ZpZ6yWuRwIgP-Ge5deMUusnc1q5knYCRDh2RF_2iTfOR0wL014guMtTAJeCb5fMM4v7XZFImNC_bp30ZpjYDFVeEBwjpDChW0FG9VwDtRVaz2fNoVi-T9v64GetspNKD_F0RcVVvWIgtT5Fwz1oMFCxC2DNMOiBYCVFJ0lgpyp4W9Fjm6P7FQQUBivUJYeOjA35q7LgY60ch45qgRfFp0DmpJ" />
-                </div>
-              </div>
+                  <div className="space-y-3 pt-2">
+                     <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-violet-600 w-[75%] rounded-full shadow-[0_0_12px_rgba(139,92,246,0.4)]"></div>
+                     </div>
+                     <div className="h-2 w-[60%] bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 w-[90%] rounded-full shadow-[0_0_12px_rgba(16,185,129,0.4)]"></div>
+                     </div>
+                  </div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-auto">Multi-agent Cognitive Assessment Active</p>
+               </div>
             </div>
           </div>
+
+          {/* Background Blobs */}
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-violet-200/20 dark:bg-violet-900/10 rounded-full blur-[120px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
         </section>
 
-        {/* Final CTA */}
-        <section className="py-16 md:py-32 px-4 md:px-6">
-          <div className="max-w-4xl mx-auto text-center bg-surface-container-lowest dark:bg-black p-8 md:p-16 rounded-xl shadow-sm border border-outline-variant/10 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-2 h-full bg-primary"></div>
-            <h2 className="text-3xl md:text-5xl font-bold text-on-surface dark:text-gray-100 mb-4 md:mb-6 font-headline">Ready to expand your mind?</h2>
-            <p className="text-base md:text-xl text-on-surface-variant dark:text-gray-300 mb-8 md:mb-10 max-w-xl mx-auto font-body">
-              Join thousands of students and lifelong learners who are mastering complex subjects through inquiry.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/login?mode=register" className="px-8 md:px-10 py-4 md:py-5 rounded-DEFAULT bg-primary text-on-primary font-bold text-base md:text-lg hover:bg-primary-container transition-all shadow-lg hover:shadow-primary/30 font-headline text-center inline-block">
-                Create Free Account
-              </Link>
-            </div>
-          </div>
+        {/* Guided Experience Preview */}
+        <section id="method" className="py-32 bg-slate-900 relative overflow-hidden">
+           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(139,92,246,0.1),_transparent_70%)]"></div>
+           <div className="max-w-7xl mx-auto px-6 relative z-10">
+              <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
+                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-violet-400">The Guided Experience</p>
+                 <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-[0.95]">Experience High-Fidelity Cognitive Tutoring.</h2>
+                 <p className="text-lg text-slate-400 font-medium">Unlike generic chatbots, our system builds a mental model of your understanding to guide you toward the "Aha!" moment.</p>
+               </div>
+               <div className="max-w-5xl mx-auto group">
+                  <div className="relative rounded-[3rem] overflow-hidden border border-white/10 bg-white/5 backdrop-blur-2xl shadow-[0_40px_100px_rgba(0,0,0,0.5)] transition-transform duration-700 hover:scale-[1.01]">
+                     <img 
+                       src="/landing/guided-session.png" 
+                       alt="Guided Socratic Session" 
+                       className="w-full h-auto object-cover"
+                     />
+                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  </div>
+               </div>
+           </div>
+        </section>
+
+        {/* Features Grid */}
+        <section id="features" className="py-32 px-6">
+           <div className="max-w-7xl mx-auto space-y-16">
+              <div className="grid md:grid-cols-3 gap-8">
+                 {/* Feature 1 */}
+                 <div className="group p-10 rounded-[2.5rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:shadow-violet-100 transition-all duration-500">
+                    <div className="h-16 w-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 mb-8 transition-transform group-hover:scale-110 group-hover:rotate-3">
+                       <BookOpen size={32} />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-4">Master Disciplines</h3>
+                    <p className="text-slate-500 dark:text-slate-400 font-bold leading-relaxed">From Quantum Physics to Renaissance Art, our AI is trained across the entire spectrum of human knowledge.</p>
+                 </div>
+
+                 {/* Feature 2 */}
+                 <div className="group p-10 rounded-[2.5rem] bg-violet-600 text-white shadow-2xl shadow-violet-200 dark:shadow-none transition-all duration-500 hover:-translate-y-2">
+                    <div className="h-16 w-16 rounded-2xl bg-white/20 flex items-center justify-center text-white mb-8 transition-transform group-hover:scale-110 group-hover:-rotate-3">
+                       <Target size={32} />
+                    </div>
+                    <h3 className="text-2xl font-black tracking-tight mb-4">Accelerated Growth</h3>
+                    <p className="text-white/80 font-bold leading-relaxed">Our method is proven to increase concept mastery by 3x compared to traditional video-based learning systems.</p>
+                 </div>
+
+                 {/* Feature 3 */}
+                 <div className="group p-10 rounded-[2.5rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:shadow-indigo-100 transition-all duration-500">
+                    <div className="h-16 w-16 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 mb-8 transition-transform group-hover:scale-110 group-hover:rotate-3">
+                       <ShieldCheck size={32} />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-4">Academic Integrity</h3>
+                    <p className="text-slate-500 dark:text-slate-400 font-bold leading-relaxed">We focus on the journey of understanding. Our AI will never provide a direct answer, ensuring true mastery.</p>
+                 </div>
+              </div>
+
+              {/* Wide Bento Feature */}
+              <div className="rounded-[3rem] bg-slate-100 dark:bg-slate-900/50 p-12 overflow-hidden flex flex-col lg:flex-row items-center gap-16 group border border-slate-200 dark:border-slate-800">
+                 <div className="lg:w-1/2 space-y-6">
+                    <div className="h-12 w-12 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600">
+                       <Zap size={24} />
+                    </div>
+                    <h3 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">Your Cognitive Identity</h3>
+                    <p className="text-lg text-slate-500 font-bold leading-relaxed">Visualize your growth with dynamic knowledge trees that evolve as you master concepts. It's more than a grade—it's your mind, mapped.</p>
+                    <div className="flex items-center gap-8 pt-4">
+                       <div>
+                          <p className="text-2xl font-black text-slate-900 dark:text-white leading-none">4.8x</p>
+                          <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mt-1">Faster Recall</p>
+                       </div>
+                       <div className="h-10 w-px bg-slate-200 dark:bg-slate-800"></div>
+                       <div>
+                          <p className="text-2xl font-black text-slate-900 dark:text-white leading-none">12min</p>
+                          <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mt-1">Deep Focus Peak</p>
+                       </div>
+                    </div>
+                 </div>
+                 <div className="lg:w-1/2 relative">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-violet-600/20 to-indigo-600/20 rounded-[2rem] blur-3xl group-hover:scale-110 transition-transform duration-1000"></div>
+                    <div className="relative rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 shadow-2xl">
+                       <div className="grid grid-cols-3 gap-3">
+                          {[1,2,3,4,5,6,7,8,9].map(i => (
+                             <div key={i} className={`h-20 rounded-xl ${i % 3 === 0 ? 'bg-violet-600 shadow-lg shadow-violet-200' : 'bg-slate-50 dark:bg-slate-800'} flex items-center justify-center animate-in zoom-in duration-500`} style={{ animationDelay: `${i * 100}ms` }}>
+                                {i % 3 === 0 && <CheckCircle size={24} className="text-white" />}
+                             </div>
+                          ))}
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-32 px-6">
+           <div className="max-w-5xl mx-auto rounded-[3.5rem] bg-slate-900 relative overflow-hidden p-12 md:p-24 text-center space-y-8 shadow-2xl">
+              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_rgba(139,92,246,0.3),_transparent_40%)]"></div>
+              <p className="text-violet-400 text-[10px] font-black uppercase tracking-[0.5em] relative z-10">Start Your Journey</p>
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter relative z-10 leading-[0.95]">Ready to redefine your <br/><span className="italic text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-300">intellectual potential?</span></h2>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10 pt-4">
+                 <Link href="/login?mode=register" className="px-12 py-5 rounded-[2rem] bg-white text-slate-900 font-black text-xl hover:scale-105 transition active:scale-95 shadow-2xl shadow-white/10">
+                    Apply for Access
+                 </Link>
+                 <Link href="/contact" className="text-white font-black hover:text-violet-300 transition-colors underline decoration-violet-500 decoration-2 underline-offset-8">
+                    Learn about Institutional Licensing
+                 </Link>
+              </div>
+           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="bg-surface-container-highest/30 dark:bg-black pt-16 md:pt-20 pb-8 md:pb-10 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12 mb-12 md:mb-16">
-            <div className="col-span-2">
-              <span className="text-2xl font-bold text-purple-600 dark:text-purple-400 font-headline mb-6 block">Socratic AI</span>
-              <p className="text-on-surface-variant dark:text-gray-300 max-w-xs leading-relaxed mb-6 font-body">
-                Revolutionizing education through guided discovery and cognitive engagement.
-              </p>
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-primary/10 transition-colors cursor-pointer">
-                  <span className="material-symbols-outlined text-on-surface" data-icon="public">public</span>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-primary/10 transition-colors cursor-pointer">
-                  <span className="material-symbols-outlined text-on-surface" data-icon="school">school</span>
-                </div>
+      <footer className="bg-white dark:bg-slate-950 px-6 py-20 border-t border-slate-100 dark:border-slate-900">
+         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-6 gap-12">
+            <div className="col-span-2 space-y-6">
+               <div className="flex items-center gap-2 group cursor-pointer inline-flex">
+                 <div className="h-10 w-10 rounded-xl bg-violet-600 flex items-center justify-center text-white">
+                    <BrainCircuit size={22} />
+                 </div>
+                 <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter">Socratic<span className="text-violet-600">AI</span></span>
+               </div>
+               <p className="text-slate-500 font-bold max-w-xs text-sm leading-relaxed italic">
+                 "Developing minds that don't just find answers, but understand why they matter."
+               </p>
+               <div className="flex gap-4">
+                  {[Globe, Lock, Monitor].map((Icon, i) => (
+                    <div key={i} className="h-10 w-10 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-400 hover:text-violet-600 transition-colors cursor-pointer border border-slate-100 dark:border-slate-800">
+                       <Icon size={18} />
+                    </div>
+                  ))}
+               </div>
+            </div>
+            {[
+              { title: 'The Platform', links: ['Curriculum', 'Socratic GPT-4', 'Knowledge Maps', 'Pricing'] },
+              { title: 'Subjects', links: ['Mathematics', 'Humanities', 'Applied Science', 'Fine Arts'] },
+              { title: 'Company', links: ['Our Mission', 'Research', 'Security', 'Contact'] },
+              { title: 'Privacy', links: ['Terms', 'Data Policy', 'Cookies', 'Settings'] }
+            ].map((col, i) => (
+              <div key={i} className="space-y-6">
+                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">{col.title}</h4>
+                 <ul className="space-y-4">
+                    {col.links.map(link => (
+                      <li key={link}>
+                         <a href="#" className="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-violet-600 transition-colors">{link}</a>
+                      </li>
+                    ))}
+                 </ul>
               </div>
+            ))}
+         </div>
+         <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-slate-100 dark:border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-xs font-bold text-slate-400">© 2026 Socratic Cognitive Systems Inc. All rights reserved.</p>
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1 rounded-full">
+               <ShieldCheck size={12} />
+               ISO 27001 Certified Learning Environment
             </div>
-            <div>
-              <h4 className="font-bold text-on-surface dark:text-gray-100 mb-6 font-headline">Product</h4>
-              <ul className="space-y-4 text-on-surface-variant dark:text-gray-300 font-body">
-                <li><a className="hover:text-primary transition-colors" href="#">Features</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">Pricing</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">Institutions</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">Enterprise</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-on-surface dark:text-gray-100 mb-6 font-headline">Subjects</h4>
-              <ul className="space-y-4 text-on-surface-variant dark:text-gray-300 font-body">
-                <li><a className="hover:text-primary transition-colors" href="#">Mathematics</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">Humanities</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">Engineering</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">Sciences</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-on-surface dark:text-gray-100 mb-6 font-headline">Company</h4>
-              <ul className="space-y-4 text-on-surface-variant dark:text-gray-300 font-body">
-                <li><a className="hover:text-primary transition-colors" href="#">About Us</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">Blog</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">Careers</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">Contact</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="pt-8 border-t border-outline-variant/20 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-on-surface-variant dark:text-gray-300 font-body">
-            <p>© 2024 Socratic AI Tutor. All rights reserved.</p>
-            <div className="flex gap-8">
-              <a className="hover:text-primary transition-colors" href="#">Privacy Policy</a>
-              <a className="hover:text-primary transition-colors" href="#">Terms of Service</a>
-            </div>
-          </div>
-        </div>
+         </div>
       </footer>
-    </>
+    </div>
   );
 }

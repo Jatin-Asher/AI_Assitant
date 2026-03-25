@@ -1,4 +1,4 @@
-"use client";
+import { Maximize2 } from "lucide-react";
 
 type FocusModeToggleProps = {
   isActive: boolean;
@@ -18,7 +18,7 @@ export function FocusModeToggle({ isActive, onToggle }: FocusModeToggleProps) {
           : "border-violet-200 bg-white/90 text-violet-900 hover:bg-violet-50 dark:border-violet-700/30 dark:bg-slate-900/85 dark:text-violet-100 dark:hover:bg-slate-800"
       }`}
     >
-      <span className="material-symbols-outlined text-[18px]">center_focus_strong</span>
+      <Maximize2 size={18} />
       <span>Focus Mode</span>
     </button>
   );
