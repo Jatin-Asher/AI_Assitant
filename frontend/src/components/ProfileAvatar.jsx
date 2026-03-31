@@ -2,9 +2,8 @@
 
 import { useState, useRef } from 'react';
 import { Camera, UploadCloud } from 'lucide-react';
+import { API_BASE_URL } from '../lib/api';
 import { uploadAvatar } from '../lib/upload';
-
-const API_BASE_URL = 'http://localhost:5001';
 
 export default function ProfileAvatar({ user, onUploadSuccess }) {
   const [loading, setLoading] = useState(false);

@@ -18,13 +18,13 @@ import {
   Zap,
   Clock
 } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/api';
 import { FocusModeToggle } from '../../../components/FocusModeToggle';
 import { SessionTimer } from '../../../components/SessionTimer';
 import { VoiceInput } from '../../../components/VoiceInput';
 import { useFocusMode } from '../../../context/FocusModeContext';
 import { useSessionTimer } from '../../../hooks/useSessionTimer';
 
-const API_BASE_URL = 'http://localhost:5001';
 const STORAGE_KEY = 'socratic-session-history';
 const ACTIVE_SESSION_KEY = 'socratic-active-session';
 

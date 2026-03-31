@@ -3,8 +3,9 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api';
 import { ThemeToggle } from '../../components/theme-toggle';
-import { 
+import {
   BrainCircuit, 
   ArrowLeft, 
   Eye, 
@@ -22,7 +23,6 @@ import {
   Upload
 } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:5001';
 const SECURITY_QUESTIONS = [
   'What was the name of your first school?',
   'What is your mother\'s maiden name?',

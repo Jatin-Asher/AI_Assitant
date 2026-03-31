@@ -5,9 +5,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Edit2, Save, X, User, Mail, BookOpen } from 'lucide-react';
+import { API_BASE_URL } from '../lib/api';
 import SubjectMultiSelect from './SubjectMultiSelect';
-
-const API_BASE_URL = 'http://localhost:5001';
 
 const profileSchema = z.object({
   name: z.string().min(1, 'Display name is required'),

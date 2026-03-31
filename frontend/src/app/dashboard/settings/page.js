@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api';
 import { ThemeToggle } from '../../../components/theme-toggle';
 import ProfileForm from '../../../components/ProfileForm';
 import ProfileAvatar from '../../../components/ProfileAvatar';
 import DangerZone from '../../../components/DangerZone';
-import { 
+import {
   User, 
   Mail, 
   Shield, 
@@ -20,8 +21,6 @@ import {
   CheckCircle,
   Calendar
 } from 'lucide-react';
-
-const API_BASE_URL = 'http://localhost:5001';
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);

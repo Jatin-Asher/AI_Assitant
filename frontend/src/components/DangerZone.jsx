@@ -3,9 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, AlertCircle } from 'lucide-react';
+import { API_BASE_URL } from '../lib/api';
 import DeleteModal from './DeleteModal';
-
-const API_BASE_URL = 'http://localhost:5001';
 
 export default function DangerZone() {
   const [isModalOpen, setIsModalOpen] = useState(false);

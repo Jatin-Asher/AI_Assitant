@@ -1,10 +1,5 @@
-const API_BASE_URL = 'http://localhost:5001';
+import { API_BASE_URL } from './api';
 
-/**
- * Uploads a file to the backend avatar endpoint.
- * @param {File} file - The file to upload.
- * @returns {Promise<{url: string, user: object}>}
- */
 export const uploadAvatar = async (file) => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   if (!token) {

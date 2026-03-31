@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api';
 import { ThemeToggle } from '../../../components/theme-toggle';
 import { 
   Layout, 
@@ -20,8 +21,6 @@ import {
   Calendar,
   Shield
 } from 'lucide-react';
-
-const API_BASE_URL = 'http://localhost:5001';
 
 const formatRecentTime = (value) =>
   new Date(value).toLocaleDateString([], {

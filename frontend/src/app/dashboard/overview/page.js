@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api';
 import { ThemeToggle } from '../../../components/theme-toggle';
-import { 
+import {
   BarChart3, 
   Play, 
   RotateCcw, 
@@ -23,7 +24,6 @@ import {
   Dna
 } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:5001';
 const STORAGE_KEY = 'socratic-session-history';
 const ACTIVE_SESSION_KEY = 'socratic-active-session';
 
