@@ -6,11 +6,30 @@ const tutorRoutes = require('../routes/tutor.routes.js');
 const sessionRoutes = require('../routes/session.routes.js');
 const app = express();
 
+const configuredOrigins = (process.env.CORS_ORIGINS || process.env.CORS_ORIGIN || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+const corsOptions = {
+    origin(origin, callback) {
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        if (configuredOrigins.length === 0 || configuredOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 // middleware
-app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true
-}));
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '12mb' }));
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
