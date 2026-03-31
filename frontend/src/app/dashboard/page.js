@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/api';
+import MobileDashboardNav from '../../components/MobileDashboardNav';
 import { ThemeToggle } from '../../components/theme-toggle';
 import { 
   Play, 
@@ -222,8 +223,9 @@ export default function DashboardPage() {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 lg:ml-64 p-4 md:p-8">
+        <main className="flex-1 px-3 py-4 sm:px-4 md:p-8 lg:ml-64">
           <div className="max-w-[1400px] mx-auto space-y-8">
+            <MobileDashboardNav active="sessions" router={router} />
             {/* Header Section */}
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2">
               <div>
@@ -251,7 +253,7 @@ export default function DashboardPage() {
             </header>
 
             {/* Grid Layout (12 Columns) */}
-            <div className="grid grid-cols-12 gap-6">
+            <div className="grid grid-cols-12 gap-4 md:gap-6">
               
               {/* LEFT COLUMN (8 cols) */}
               <div className="col-span-12 lg:col-span-8 space-y-6">

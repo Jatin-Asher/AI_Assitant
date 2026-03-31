@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/api';
+import MobileDashboardNav from '../../../components/MobileDashboardNav';
 import { ThemeToggle } from '../../../components/theme-toggle';
 import ProfileForm from '../../../components/ProfileForm';
 import ProfileAvatar from '../../../components/ProfileAvatar';
@@ -311,8 +312,9 @@ export default function SettingsPage() {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 lg:ml-64 p-4 md:p-8">
+        <main className="flex-1 px-3 py-4 sm:px-4 md:p-8 lg:ml-64">
           <div className="max-w-[1400px] mx-auto space-y-8">
+            <MobileDashboardNav active="settings" router={router} />
             {/* Header Section */}
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2">
               <div>
@@ -340,13 +342,13 @@ export default function SettingsPage() {
             </header>
 
             {/* Grid Layout (12 Columns) */}
-            <div className="grid grid-cols-12 gap-6">
+            <div className="grid grid-cols-12 gap-4 md:gap-6">
               
               {/* LEFT COLUMN (8 cols) */}
               <div className="col-span-12 lg:col-span-8 space-y-6">
                 
                 {/* Profile Form Card */}
-                <section className="rounded-3xl border border-white bg-white/60 p-8 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60">
+                <section className="rounded-3xl border border-white bg-white/60 p-5 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60 sm:p-8">
                   <div className="flex items-center gap-3 mb-8">
                     <div className="h-10 w-10 rounded-xl bg-violet-50 flex items-center justify-center text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
                        <User size={20} />
@@ -367,7 +369,7 @@ export default function SettingsPage() {
                 </section>
 
                 {/* Password Management Card */}
-                <section className="rounded-3xl border border-white bg-white/60 p-8 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60">
+                <section className="rounded-3xl border border-white bg-white/60 p-5 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60 sm:p-8">
                    <div className="flex items-center gap-3 mb-8">
                     <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
                        <Shield size={20} />
@@ -430,7 +432,7 @@ export default function SettingsPage() {
                         {passwordMessage && <p className="text-sm font-bold text-emerald-600">{passwordMessage}</p>}
                         {passwordError && <p className="text-sm font-bold text-red-600">{passwordError}</p>}
 
-                        <div className="flex gap-4">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                           <button
                             type="submit"
                             disabled={passwordSaving}
@@ -489,7 +491,7 @@ export default function SettingsPage() {
               <div className="col-span-12 lg:col-span-4 space-y-6">
                 
                 {/* Identity Sidebar Card */}
-                <section className="rounded-3xl border border-white bg-white/60 p-8 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60 text-center">
+                <section className="rounded-3xl border border-white bg-white/60 p-5 text-center shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60 sm:p-8">
                   <div className="mb-6 flex justify-center">
                     <ProfileAvatar user={user} onUploadSuccess={handleAvatarUpload} />
                   </div>

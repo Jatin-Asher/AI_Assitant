@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/api';
+import MobileDashboardNav from '../../../components/MobileDashboardNav';
 import { ThemeToggle } from '../../../components/theme-toggle';
 import { 
   Layout, 
@@ -259,11 +260,12 @@ export default function ProgressPage() {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 lg:ml-64 p-4 md:p-8">
+        <main className="flex-1 px-3 py-4 sm:px-4 md:p-8 lg:ml-64">
           <div className="max-w-[1400px] mx-auto space-y-8">
+            <MobileDashboardNav active="progress" router={router} />
             
             {goalPopup.visible && (
-              <div className="fixed right-6 top-6 z-50 animate-in slide-in-from-right duration-300">
+              <div className="fixed left-3 right-3 top-4 z-50 animate-in slide-in-from-right duration-300 sm:left-auto sm:right-6 sm:top-6">
                 <div className={`rounded-2xl px-5 py-4 text-sm font-bold shadow-2xl backdrop-blur-xl flex items-center gap-3 ${goalPopup.isError ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white'}`}>
                   {goalPopup.isError ? <AlertCircle size={20} /> : <CheckCircle2 size={20} />}
                   {goalPopup.message}
@@ -322,13 +324,13 @@ export default function ProgressPage() {
             </section>
 
             {/* Main Content Grid (12 Columns) */}
-            <div className="grid grid-cols-12 gap-6 pb-8">
+            <div className="grid grid-cols-12 gap-4 pb-8 md:gap-6">
               
               {/* LEFT: Charts & Recent activity (8 cols) */}
               <div className="col-span-12 lg:col-span-8 space-y-6">
                 
                 {/* Study Hours Card */}
-                <section className="rounded-[2.5rem] border border-white bg-white/60 p-8 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60 animate-in fade-in duration-1000">
+                <section className="rounded-[2.5rem] border border-white bg-white/60 p-5 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60 animate-in fade-in duration-1000 sm:p-8">
                   <div className="flex items-center justify-between mb-10">
                     <div>
                       <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
@@ -339,7 +341,8 @@ export default function ProgressPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-7 gap-4 items-end h-64 mt-4">
+                  <div className="overflow-x-auto pb-2">
+                    <div className="mt-4 grid min-w-[540px] grid-cols-7 gap-4 items-end h-64">
                     {progress.studyHours.map((entry, i) => (
                       <div key={entry.label} className="flex flex-col items-center gap-4 group">
                         <div className="relative w-full flex justify-center">
@@ -360,11 +363,12 @@ export default function ProgressPage() {
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-violet-600 transition-colors">{entry.label}</p>
                       </div>
                     ))}
+                    </div>
                   </div>
                 </section>
 
                 {/* Recent Activity Card */}
-                <section className="rounded-[2.5rem] border border-white bg-white/60 p-8 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60">
+                <section className="rounded-[2.5rem] border border-white bg-white/60 p-5 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60 sm:p-8">
                   <div className="flex items-center justify-between mb-8">
                     <div>
                       <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
@@ -422,7 +426,7 @@ export default function ProgressPage() {
               <div className="col-span-12 lg:col-span-4 space-y-6">
                 
                 {/* Mastery Progress Card */}
-                <section className="rounded-[2.5rem] border border-white bg-white/60 p-8 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60 transition hover:shadow-lg">
+                <section className="rounded-[2.5rem] border border-white bg-white/60 p-5 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/60 transition hover:shadow-lg sm:p-8">
                   <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-8">Concept Mastery</h2>
                   <div className="space-y-6">
                     {progress.subjectMastery.map((entry) => (
@@ -451,7 +455,7 @@ export default function ProgressPage() {
                    <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/20 blur-3xl rounded-full translate-x-12 -translate-y-12"></div>
                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-fuchsia-600/20 blur-3xl rounded-full -translate-x-12 translate-y-12"></div>
                    
-                   <div className="relative p-8 space-y-6">
+                   <div className="relative space-y-6 p-5 sm:p-8">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center text-white shadow-lg shadow-violet-900/50">
                            <BrainCircuit size={20} />
@@ -472,7 +476,7 @@ export default function ProgressPage() {
                       <form onSubmit={handleGoalSubmit} className="space-y-4 pt-2">
                         <div className="flex flex-col gap-2">
                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Update Weekly Goal (Hours)</label>
-                           <div className="flex items-center gap-2">
+                           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                               <div className="relative flex-1 group">
                                 <Target size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
                                 <input
@@ -486,7 +490,7 @@ export default function ProgressPage() {
                               <button
                                 type="submit"
                                 disabled={goalSaving}
-                                className="h-12 px-6 bg-violet-600 hover:bg-violet-700 text-white font-black text-[11px] uppercase tracking-widest rounded-2xl transition disabled:opacity-50 shadow-lg shadow-violet-900/40 shrink-0"
+                                className="h-12 w-full bg-violet-600 hover:bg-violet-700 text-white font-black text-[11px] uppercase tracking-widest rounded-2xl transition disabled:opacity-50 shadow-lg shadow-violet-900/40 shrink-0 sm:w-auto sm:px-6"
                               >
                                 {goalSaving ? '...' : <Target size={18} />}
                               </button>

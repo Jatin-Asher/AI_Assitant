@@ -406,7 +406,7 @@ export default function LoginPage() {
         <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-indigo-500/5 rounded-full blur-[120px]"></div>
       </div>
 
-      <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-12 items-center">
+      <div className="w-full max-w-5xl grid gap-10 lg:grid-cols-2 lg:gap-12 items-center">
         {/* Left: Brand Info */}
         <div className="hidden lg:block space-y-12 animate-in fade-in slide-in-from-left duration-700">
           <Link href="/" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold text-sm hover:text-violet-600 transition-colors group">
@@ -464,7 +464,7 @@ export default function LoginPage() {
               </div>
             )}
 
-            <div className="p-8 md:p-10 space-y-8">
+            <div className="space-y-8 p-6 md:p-10">
               {/* Messages */}
               {error && (
                 <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-950 text-red-600 dark:text-red-400 text-xs font-bold flex items-center gap-2 animate-in slide-in-from-top-4">
@@ -570,7 +570,7 @@ export default function LoginPage() {
                     <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">Click to upload identity</p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Full Name</label>
                       <input

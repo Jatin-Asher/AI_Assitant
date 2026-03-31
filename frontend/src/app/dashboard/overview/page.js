@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/api';
+import MobileDashboardNav from '../../../components/MobileDashboardNav';
 import { ThemeToggle } from '../../../components/theme-toggle';
 import {
   BarChart3, 
@@ -211,8 +212,9 @@ export default function TutorDashboardOverviewPage() {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 lg:ml-64 p-4 md:p-8 transition-all">
+        <main className="flex-1 px-3 py-4 sm:px-4 md:p-8 lg:ml-64 transition-all">
           <div className="max-w-[1400px] mx-auto space-y-8">
+            <MobileDashboardNav active="overview" router={router} />
             {/* Header Section */}
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2">
               <div>
@@ -242,13 +244,13 @@ export default function TutorDashboardOverviewPage() {
             </header>
 
             {/* Grid Layout (12 Columns) */}
-            <div className="grid grid-cols-12 gap-6">
+            <div className="grid grid-cols-12 gap-4 md:gap-6">
               
               {/* LEFT COLUMN (col-span-8) */}
               <div className="col-span-12 lg:col-span-8 space-y-6">
                 
                 {/* Session Setup Card */}
-                <section className="group relative overflow-hidden rounded-3xl border border-white bg-white/60 p-8 shadow-sm backdrop-blur-xl transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900/60">
+                <section className="group relative overflow-hidden rounded-3xl border border-white bg-white/60 p-5 shadow-sm backdrop-blur-xl transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900/60 sm:p-8">
                   <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="space-y-2">
                       <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Session Setup</h2>
@@ -265,7 +267,7 @@ export default function TutorDashboardOverviewPage() {
                     </button>
                   </div>
 
-               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+               <div className="grid grid-cols-2 gap-3 pt-6 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
             {['Physics', 'Chemistry', 'Mathematics', 'Biology'].map((subject) => {
               const icons = {
                 Physics: <Atom size={24} className={selectedSubject === 'Physics' ? "text-violet-600" : "text-slate-400"} />,
@@ -278,7 +280,7 @@ export default function TutorDashboardOverviewPage() {
                 <button
                   key={subject}
                   onClick={() => setSelectedSubject(subject)}
-                  className={`group flex flex-col items-center gap-4 rounded-[2rem] border p-6 transition-all duration-300 ${
+                  className={`group flex flex-col items-center gap-3 rounded-[1.5rem] border p-4 text-center transition-all duration-300 sm:gap-4 sm:rounded-[2rem] sm:p-6 ${
                     selectedSubject === subject
                       ? 'border-violet-600 bg-violet-50/80 shadow-lg shadow-violet-100 dark:bg-violet-900/30 dark:shadow-none translate-y-[-4px]'
                       : 'border-slate-100 bg-white/80 hover:border-violet-200 hover:bg-violet-50/30 dark:border-slate-800 dark:bg-slate-800/40'

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Layout, 
+  Menu,
   MessageSquare, 
   Activity, 
   User, 
@@ -11,11 +12,7 @@ import {
   Trash2, 
   Brain,
   History,
-  Dashboard,
-  Timer,
-  Maximize2,
   Trophy,
-  Zap,
   Clock
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api';
@@ -60,6 +57,7 @@ export default function SessionPage() {
   const [historyEntries, setHistoryEntries] = useState([]);
   const [isSending, setIsSending] = useState(false);
   const [menuOpenId, setMenuOpenId] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [stats, setStats] = useState({ totalSessions: 0, totalHours: 0, conceptsMastered: 0 });
   const router = useRouter();
@@ -329,6 +327,7 @@ export default function SessionPage() {
       question: entry.recentQuestion || entry.preview,
       session: entry.id,
     });
+    setIsSidebarOpen(false);
     router.push(`/dashboard/session?${params.toString()}`);
   };
 
@@ -357,7 +356,27 @@ export default function SessionPage() {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(196,181,253,0.35),_transparent_22%),linear-gradient(135deg,_#faf5ff_0%,_#f8fafc_50%,_#eef2ff_100%)] text-slate-900 dark:bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.18),_transparent_22%),linear-gradient(135deg,_#090b17_0%,_#101426_45%,_#090d1b_100%)] dark:text-white">
       <div className="flex min-h-screen">
-        <aside className={`overflow-hidden border-r border-slate-200 bg-white px-6 py-6 transition-all duration-300 dark:border-slate-800 dark:bg-slate-950 ${isFocusMode ? 'pointer-events-none w-0 -translate-x-8 px-0 opacity-0' : 'w-72 translate-x-0 opacity-100'}`}>
+        {isSidebarOpen && (
+          <button
+            type="button"
+            onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 z-30 bg-slate-950/50 backdrop-blur-sm lg:hidden"
+            aria-label="Close session sidebar"
+          />
+        )}
+
+        <aside className={`fixed inset-y-0 left-0 z-40 overflow-y-auto border-r border-slate-200 bg-white px-5 py-6 transition-all duration-300 dark:border-slate-800 dark:bg-slate-950 lg:static lg:z-auto lg:translate-x-0 lg:px-6 ${isFocusMode ? 'pointer-events-none lg:w-0 lg:-translate-x-8 lg:px-0 lg:opacity-0' : ''} ${isSidebarOpen ? 'w-[88vw] max-w-sm translate-x-0 opacity-100' : 'w-[88vw] max-w-sm -translate-x-full opacity-0 lg:w-72 lg:opacity-100'}`}>
+          <div className="mb-4 flex items-center justify-between lg:hidden">
+            <p className="text-xs font-black uppercase tracking-[0.25em] text-slate-400">Session Menu</p>
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(false)}
+              className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              aria-label="Close session menu"
+            >
+              <span className="material-symbols-outlined text-base">close</span>
+            </button>
+          </div>
           <div className="mb-10 flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-700 text-sm font-bold text-white dark:bg-violet-800">
               AI
@@ -478,14 +497,22 @@ export default function SessionPage() {
           </div>
         </aside>
 
-        <main className={`flex-1 p-4 transition-all duration-300 md:p-6 ${isFocusMode ? 'md:p-4' : ''}`}>
-          <section className={`mx-auto flex min-h-[calc(100vh-2rem)] flex-col rounded-[2rem] border border-violet-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,243,255,0.92))] p-4 text-slate-900 shadow-[0_24px_80px_rgba(148,163,184,0.2)] transition-all duration-300 md:p-6 dark:border-white/12 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,243,255,0.95))] dark:shadow-[0_24px_80px_rgba(2,6,23,0.45)] ${isFocusMode ? 'max-w-[1400px]' : 'max-w-[1080px]'}`}>
+        <main className={`flex-1 px-3 py-4 transition-all duration-300 sm:px-4 md:p-6 ${isFocusMode ? 'md:p-4' : ''}`}>
+          <section className={`mx-auto flex min-h-[calc(100vh-1.5rem)] flex-col rounded-[2rem] border border-violet-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,243,255,0.92))] p-3 text-slate-900 shadow-[0_24px_80px_rgba(148,163,184,0.2)] transition-all duration-300 md:min-h-[calc(100vh-2rem)] md:p-6 dark:border-white/12 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,243,255,0.95))] dark:shadow-[0_24px_80px_rgba(2,6,23,0.45)] ${isFocusMode ? 'max-w-[1400px]' : 'max-w-[1080px]'}`}>
             <header className="mb-4 flex flex-col gap-4 rounded-[1.6rem] border border-violet-200 bg-white/80 px-5 py-5 shadow-sm md:flex-row md:items-center md:justify-between dark:border-slate-200/80">
               <div>
                 <p className="text-sm uppercase tracking-[0.25em] text-violet-700">Active Tutor Session</p>
                 <h1 className="mt-2 text-3xl font-bold md:text-4xl">{subject}</h1>
               </div>
-              <div className="flex flex-wrap items-center justify-end gap-3">
+              <div className="flex flex-wrap items-center justify-start gap-3 md:justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsSidebarOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-2xl border border-violet-300 bg-white px-4 py-2 font-medium text-violet-900 transition hover:bg-violet-50 lg:hidden"
+                >
+                  <Menu size={18} />
+                  Session Menu
+                </button>
                 <SessionTimer seconds={elapsedSeconds} />
                 <FocusModeToggle isActive={isFocusMode} onToggle={toggleFocusMode} />
                 <div className="flex items-center gap-2 rounded-2xl bg-emerald-100 px-4 py-2 text-emerald-800 shadow-sm">
@@ -515,7 +542,7 @@ export default function SessionPage() {
                     )}
 
                     <div
-                      className={`max-w-[80%] rounded-[1.4rem] px-5 py-4 shadow-sm ${
+                    className={`max-w-[88%] rounded-[1.4rem] px-4 py-4 shadow-sm sm:max-w-[80%] sm:px-5 ${
                         message.role === 'user'
                           ? 'bg-violet-700 text-white'
                           : message.error
@@ -560,7 +587,7 @@ export default function SessionPage() {
               </div>
             </div>
 
-            <div className="mt-4 rounded-[1.6rem] border border-violet-200 bg-white/75 px-4 py-4 shadow-sm">
+            <div className="mt-4 rounded-[1.6rem] border border-violet-200 bg-white/75 px-3 py-4 shadow-sm sm:px-4">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
                 <div className="relative flex-1">
                   <input
@@ -573,7 +600,7 @@ export default function SessionPage() {
                       }
                     }}
                     placeholder={`Ask your ${subject} question...`}
-                    className="min-h-[3.8rem] w-full rounded-[1.2rem] border-2 border-violet-700 bg-white px-4 pr-36 text-lg text-slate-900 outline-none transition focus:border-violet-800 focus:ring-4 focus:ring-violet-200"
+                    className="min-h-[3.8rem] w-full rounded-[1.2rem] border-2 border-violet-700 bg-white px-4 pr-28 text-base text-slate-900 outline-none transition focus:border-violet-800 focus:ring-4 focus:ring-violet-200 sm:pr-36 sm:text-lg"
                   />
                   <div className="absolute inset-y-0 right-3 flex items-center">
                     <VoiceInput
@@ -585,32 +612,32 @@ export default function SessionPage() {
                 <button
                   onClick={() => void sendMessage(input, 'guide')}
                   disabled={isSending || !input.trim()}
-                  className="rounded-[1rem] bg-gradient-to-r from-violet-800 to-violet-600 dark:from-violet-900 dark:to-violet-700 px-6 py-4 text-lg font-semibold text-white shadow-[0_14px_30px_rgba(76,29,149,0.32)] transition hover:from-violet-900 hover:to-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="w-full rounded-[1rem] bg-gradient-to-r from-violet-800 to-violet-600 px-6 py-4 text-base font-semibold text-white shadow-[0_14px_30px_rgba(76,29,149,0.32)] transition hover:from-violet-900 hover:to-violet-700 disabled:cursor-not-allowed disabled:opacity-60 dark:from-violet-900 dark:to-violet-700 lg:w-auto lg:text-lg"
                 >
                   Submit Insight
                 </button>
               </div>
 
               {!isFocusMode && (
-                <div className="mt-4 flex flex-wrap gap-3 transition-opacity duration-300">
+                <div className="mt-4 grid grid-cols-1 gap-3 transition-opacity duration-300 sm:grid-cols-3">
                   <button
                     onClick={() => void sendMessage(input || 'Give me a hint for this problem.', 'hint')}
                     disabled={isSending}
-                    className="rounded-2xl border border-violet-300 bg-violet-100 px-5 py-3 text-base font-medium text-violet-950 transition hover:bg-violet-200 disabled:opacity-60"
+                    className="rounded-2xl border border-violet-300 bg-violet-100 px-5 py-3 text-sm font-medium text-violet-950 transition hover:bg-violet-200 disabled:opacity-60 sm:text-base"
                   >
                     Give Hint
                   </button>
                   <button
                     onClick={() => void sendMessage(input || 'I am stuck. Please help me with the next small step.', 'stuck')}
                     disabled={isSending}
-                    className="rounded-2xl border border-violet-300 bg-violet-100 px-5 py-3 text-base font-medium text-violet-950 transition hover:bg-violet-200 disabled:opacity-60"
+                    className="rounded-2xl border border-violet-300 bg-violet-100 px-5 py-3 text-sm font-medium text-violet-950 transition hover:bg-violet-200 disabled:opacity-60 sm:text-base"
                   >
                     Stuck? Get Hint
                   </button>
                   <button
                     onClick={() => void sendMessage(input || 'Ask me a guiding question about this problem.', 'question')}
                     disabled={isSending}
-                    className="rounded-2xl border border-violet-300 bg-violet-100 px-5 py-3 text-base font-medium text-violet-950 transition hover:bg-violet-200 disabled:opacity-60"
+                    className="rounded-2xl border border-violet-300 bg-violet-100 px-5 py-3 text-sm font-medium text-violet-950 transition hover:bg-violet-200 disabled:opacity-60 sm:text-base"
                   >
                     Ask Question
                   </button>
