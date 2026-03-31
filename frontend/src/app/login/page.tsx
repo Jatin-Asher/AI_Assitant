@@ -3,9 +3,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api';
 import { ThemeToggle } from '../../components/theme-toggle';
 
-const API_BASE_URL = 'http://localhost:5000';
 const SECURITY_QUESTIONS = [
   'What was the name of your first school?',
   'What is your mother\'s maiden name?',

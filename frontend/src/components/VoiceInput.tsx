@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { API_BASE_URL } from "@/lib/api";
 
 type VoiceInputProps = {
   onTranscript: (text: string) => void;
@@ -159,7 +160,7 @@ export function VoiceInput({ onTranscript, disabled = false }: VoiceInputProps) 
 
     const audioBase64 = btoa(binary);
 
-    const response = await fetch("http://localhost:5000/api/tutor/transcribe", {
+    const response = await fetch(`${API_BASE_URL}/api/tutor/transcribe`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api';
 import { ThemeToggle } from '../../../components/theme-toggle';
-
-const API_BASE_URL = 'http://localhost:5000';
 
 const formatRecentTime = (value) =>
   new Date(value).toLocaleDateString([], {
