@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Layout, 
@@ -50,7 +50,7 @@ const makeSessionEntry = ({ existingHistory, subject, sessionId, preview, recent
   ...existingHistory.filter((entry) => entry.id !== sessionId),
 ].slice(0, 12);
 
-export default function SessionPage() {
+function SessionPageContent() {
   const [loading, setLoading] = useState(true);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -648,5 +648,19 @@ export default function SessionPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function SessionPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen grid place-items-center bg-slate-100 dark:bg-slate-950">
+          <p className="text-lg text-slate-700 dark:text-slate-200">Preparing your session...</p>
+        </main>
+      }
+    >
+      <SessionPageContent />
+    </Suspense>
   );
 }
