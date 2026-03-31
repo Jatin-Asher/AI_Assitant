@@ -1,0 +1,62 @@
+.topHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+  /* Soft background shift rather than hard border */
+  border-bottom: 1px solid rgba(193, 198, 212, 0.2); 
+}
+
+.status {
+  font-family: var(--font-inter);
+  font-size: 0.875rem;
+  color: var(--secondary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: var(--secondary);
+  border-radius: 50%;
+}
+
+.chatFeed {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom minimal scrollbar */
+.chatFeed::-webkit-scrollbar {
+  width: 6px;
+}
+.chatFeed::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chatFeed::-webkit-scrollbar-thumb {
+  background: var(--surface-dim);
+  border-radius: 4px;
+}
+
+.inputWrapper {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  position: relative;
+}
+
+/* "The Focused Fade" signature interaction simulation */
+.inputWrapper:focus-within ~ .chatFeed {
+  /* Dim background when Socratic AI or user is thinking/typing */
+  opacity: 0.8;
+  filter: saturate(0.8);
+  transition: all 0.3s ease;
+}

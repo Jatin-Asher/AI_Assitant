@@ -1,0 +1,56 @@
+.sidebar {
+  width: 280px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  /* The Glass Rule */
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(193, 198, 212, 0.15); /* Ghost Border Fallback */
+  z-index: 10;
+}
+
+.header {
+  padding: 2rem;
+}
+
+.nav {
+  flex: 1;
+  padding: 0 1rem;
+}
+
+.navTitle {
+  font-family: var(--font-inter);
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+.navList {
+  list-style: none;
+}
+
+.navItem {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.25rem;
+  border-radius: var(--radius-default);
+  color: var(--on-surface);
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navItem:hover {
+  background-color: var(--surface-container-low);
+}
+
+.navItem.active {
+  background-color: var(--primary-container);
+  color: var(--on-primary);
+  font-weight: 500;
+}

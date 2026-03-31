@@ -1,0 +1,34 @@
+.bubbleWrapper {
+  display: flex;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.studentWrapper {
+  justify-content: flex-end;
+}
+
+.bubble {
+  max-width: 80%;
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Tutor Bubble */
+.tutor {
+  background-color: var(--surface-container-lowest);
+  color: var(--on-surface);
+  /* The "No-Line" Rule - use a left accent bar instead of border */
+  box-shadow: inset 4px 0 0 0 var(--primary), var(--ambient-shadow);
+  border-top-left-radius: 0; /* Distinct shape for tutor */
+}
+
+/* Student Bubble */
+.student {
+  background-color: var(--secondary-container);
+  color: var(--on-secondary-container);
+  box-shadow: var(--ambient-shadow);
+  border-top-right-radius: 0; /* Distinct shape for student */
+}
