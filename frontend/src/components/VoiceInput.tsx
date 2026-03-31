@@ -1,6 +1,5 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
+import { Mic, MicOff } from "lucide-react";
 import { API_BASE_URL } from "@/lib/api";
 
 type VoiceInputProps = {
@@ -292,7 +291,7 @@ export function VoiceInput({ onTranscript, disabled = false }: VoiceInputProps) 
             : "border-violet-300 bg-white text-violet-700 hover:bg-violet-50 dark:border-violet-700/40 dark:bg-slate-900 dark:text-violet-200 dark:hover:bg-slate-800"
         } disabled:cursor-not-allowed disabled:opacity-60`}
       >
-        <span className="material-symbols-outlined">{isListening ? "mic" : "mic_none"}</span>
+        {isListening ? <Mic size={20} /> : <MicOff size={20} />}
       </button>
       <div className="min-w-[96px] text-xs">
         {isListening ? (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
+import { Sun, Moon } from "lucide-react";
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
@@ -16,9 +17,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       type="button"
       aria-label="Toggle theme"
     >
-      <span className="material-symbols-outlined">
-        {resolvedTheme === "dark" ? "light_mode" : "dark_mode"}
-      </span>
+      {resolvedTheme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
     </button>
   );
 }

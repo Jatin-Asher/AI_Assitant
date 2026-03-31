@@ -29,7 +29,7 @@ export default function RootLayout({
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
-      <body className={`${jakartaSans.variable} ${inter.variable} bg-surface dark:bg-black text-on-surface dark:text-gray-200 selection:bg-primary-fixed selection:text-on-primary-fixed transition-colors duration-300 font-body`}>
+      <body suppressHydrationWarning className={`${jakartaSans.variable} ${inter.variable} bg-surface dark:bg-black text-on-surface dark:text-gray-200 selection:bg-primary-fixed selection:text-on-primary-fixed transition-colors duration-300 font-body`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
